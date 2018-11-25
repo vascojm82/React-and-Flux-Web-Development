@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react-dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <title>ReactJS on the Browser - NO NPM</title>
+    <script type="text/babel">
+      let btnStyle ={
+        background: '#ff0000'
+      }
+
+      let RedButton = React.createClass({
+        onClick: function(e) {
+          alert("THIS STYLE IS FOR DEV/TESTING PURPOSES ONLY DO NOT DO IT THIS WAY EVER IN PRODUCTION");
+        },
+        render: function() {
+          return (
+            <button style={btnStyle} onClick={this.onClick}>Click Me!</button>
+          )
+        }
+      });
+
+      ReactDOM.render(<RedButton />, document.getElementById("putbuttonhere"));
+    </script>
+  </head>
+  <body>
+    <div id="putbuttonhere"></div>
+  </body>
+</html>

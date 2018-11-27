@@ -2,6 +2,7 @@ let React = require('react');
 let ReactRouter = require('react-router');
 let Router = ReactRouter.Router;
 let Route = ReactRouter.Route;
+let Link = ReactRouter.Link;
 let hashHistory = ReactRouter.hashHistory;
 let Base = require('./components/Base.jsx');
 let Page1 = require('./components/Page1.jsx');

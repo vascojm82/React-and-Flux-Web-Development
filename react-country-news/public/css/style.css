@@ -3,6 +3,10 @@
   margin: 0;
 }
 
+.card-img{
+  width: 60%;
+}
+
 /** Image Carousel  **/
 .content {
     position: absolute;
@@ -54,4 +58,12 @@
   color: #fff;
 	opacity: 1;
 }
-/********************?
+/********************/
+
+/** MEDIA QUERIES **/
+@media screen and (max-width: 823px) {
+    .card-img{
+      width: 100%;
+    }
+}
+/*********************/

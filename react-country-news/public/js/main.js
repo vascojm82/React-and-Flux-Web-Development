@@ -26008,7 +26008,6 @@ let Card = React.createClass({
     };
 
     let img = {
-      width: "60%",
       height: 320,
       paddingBottom: 10
     };
@@ -26059,7 +26058,7 @@ let Card = React.createClass({
               React.createElement(
                 "div",
                 null,
-                React.createElement("img", { style: img, className: "img-responsive", src: this.props.url }),
+                React.createElement("img", { style: img, className: "img-responsive card-img", src: this.props.url }),
                 React.createElement(
                   "p",
                   { style: imgDesc },

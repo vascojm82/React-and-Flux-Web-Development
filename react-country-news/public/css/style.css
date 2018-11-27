@@ -61,7 +61,7 @@
 /********************/
 
 /** MEDIA QUERIES **/
-@media screen and (max-width: 823px) {
+@media screen and (max-width: 991px) {
     .card-img{
       width: 100%;
     }

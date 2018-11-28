@@ -11,7 +11,7 @@ let Button = React.createClass({
         btnValue = '';
 
     let btnStyle = {
-      width: 60,
+      width: 55,
       margin: 2
     }
 

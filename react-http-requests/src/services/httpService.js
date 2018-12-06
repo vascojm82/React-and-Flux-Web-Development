@@ -5,7 +5,7 @@ let service = {
   get: function(url){
     return fetch(baseUrl + url)
       .then(function(response){
-        console.log("FETCH response: " + response);
+        console.log("FETCH response: " + JSON.stringify(response));
         return response.json();
       });
   }

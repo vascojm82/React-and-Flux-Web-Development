@@ -1,0 +1,163 @@
+/**** CUSTOM BOOTSTRAP 5-COLUMN GRID EXTENSION ****/
+.col-xs-15,
+.col-sm-15,
+.col-md-15,
+.col-lg-15 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.col-xs-15 {
+    width: 20%;
+    float: left;
+}
+
+@media (min-width: 768px) {
+.col-sm-15 {
+        width: 20%;
+        float: left;
+    }
+}
+
+@media (min-width: 992px) {
+    .col-md-15 {
+        width: 20%;
+        float: left;
+    }
+}
+
+@media (min-width: 1200px) {
+    .col-lg-15 {
+        width: 20%;
+        float: left;
+    }
+}
+/**************************************************/
+
+/**** APP CSS ***/
+body{
+  background-color: #2f3438;
+}
+
+.container-fluid{
+
+}
+
+.form-group{
+    margin-bottom: 0;
+}
+
+.panel{
+  border: none;
+}
+
+.panel-header{
+  height: 218px;
+}
+
+.panel-body {
+    padding: 0 15px;
+    height: 160px;
+}
+
+.weather-icon h1{
+  margin-top: 10px;
+  font-size: 50px;
+}
+
+.temperature h1{
+  margin-top: 20px;
+  font-size: 50px;
+}
+
+.wind-speed-humidity h4{
+  margin-top: 20px;
+  font-size: 20px;
+  padding: 0
+}
+
+.wind-speed-humidity .wi-humidity{
+  padding-left: 0;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #FFF !important;
+    opacity: 1 !important; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #FFF !important;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: #FFF !important;
+}
+
+/*** MEDIA QUERIES ***/
+@media screen and (min-width: 1129px) and (max-width: 1464px) {
+  .bottom-line{
+    height: 64.5vh;
+    margin-bottom: 20px;
+  }
+}
+
+@media screen and (min-width: 1091px) and (max-width: 1128px) {
+  .top-line{
+    margin-bottom: 110px;
+  }
+
+  .bottom-line{
+    height: 79vh;
+    margin-bottom: 20px;
+  }
+
+  .panel-header {
+    height: 191px;
+  }
+
+  .temperature h1 {
+    font-size: 35px;
+  }
+
+  .weather-icon h1 {
+    font-size: 43px;
+  }
+
+  .wind-speed-humidity h4 {
+    font-size: 17px;
+  }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1091px) {
+  .top-line{
+    margin-bottom: 70px;
+  }
+
+  .bottom-line{
+    height: 68.5vh;
+    margin-bottom: 20px;
+  }
+
+  .panel-header {
+    height: 202px;
+  }
+
+  .fa.fa-sun-o{
+    display: none;
+  }
+
+  .weather-icon h1 {
+    font-size: 40px;
+  }
+
+  .temperature h1 {
+    font-size: 35px;
+  }
+
+  .wind-speed-humidity h4 {
+    margin-top: 10px;
+  }
+}
+/***************************/

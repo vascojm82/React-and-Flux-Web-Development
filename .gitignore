@@ -5,5 +5,7 @@ react-country-news/node_modules
 react-forms/node_modules
 react-calculator/node_modules
 react-http-requests/node_modules
-simple-express-server/node_modules
+simple-express-server-Fetch/node_modules
+simple-express-server-ReFlux/node_modules
 react-weather-app/node_modules
+react-ReFlux/node_modules

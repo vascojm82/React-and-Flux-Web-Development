@@ -21605,131 +21605,35 @@ module.exports = SearchBox;
 
 },{"react":184}],187:[function(require,module,exports){
 let React = require('react');
-let HTTP = require('../services/httpservice');
 let SearchBox = require('./SearchBox.jsx');
 let Json = require('circular-json');
+let helpers = require('../helpers/helpers');
 
-let ListItem = React.createClass({
-  displayName: 'ListItem',
+let Tile = React.createClass({
+  displayName: 'Tile',
   //Defining React component object
   getInitialState: function () {
     //called only once when the component loads
-    return { searchStr: 'Madrid, Spain', formattedTime: [], longDate: [], temperature_day: [],
-      temperature_min: [], temperature_max: [], icons: [], humidity: [] };
-  },
-  calculateTime: function (unixTime) {
-    let date = new Date(unixTime * 1000);
-    // Date format: MM/DD/YYYY
-    let tDate = date.getMonth() + "/" + date.getDate() + "/" + date.getFullYear();
-    // Hours part from the timestamp
-    let hours = date.getHours();
-    // Minutes part from the timestamp
-    let minutes = "0" + date.getMinutes();
-    // Seconds part from the timestamp
-    let seconds = "0" + date.getSeconds();
-    let formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-    let longDate = date.toLocaleString('en-GB', { day: 'numeric', month: 'long' });
-
-    let timeObject = {
-      unixTime: unixTime,
-      date: date,
-      tDate: tDate,
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds,
-      formattedTime: formattedTime,
-      longDate: longDate
-    };
-
-    return timeObject;
-  },
-  getWeatherData: function (location) {
-    HTTP.get(`q=${location}&cnt=5&units=imperial&appid=3ff527abfa8edebc287dd4bcf540c174`).then(function (data) {
-      let _formattedTime = [];
-      let _longDate = [];
-      let tDay = [];
-      let tMin = [];
-      let tMax = [];
-      let _icons = [];
-      let _humidity = [];
-
-      for (i = 0; i < data.list.length; i++) {
-        let dt = this.calculateTime(data.list[i].dt);
-        let formatted_time = dt.tDate + " " + dt.formattedTime;
-        let long_date = dt.longDate;
-
-        _formattedTime[i] = formatted_time;
-        _longDate[i] = long_date;
-        tDay[i] = parseInt(data.list[i].temp.day);
-        tMin[i] = parseInt(data.list[i].temp.min);
-        tMax[i] = parseInt(data.list[i].temp.max);
-        _icons[i] = data.list[i].weather[0].icon;
-        _humidity[i] = parseInt(data.list[i].humidity);
-      }
-
-      this.setState({
-        formattedTime: _formattedTime,
-        longDate: _longDate,
-        temperature_day: tDay,
-        temperature_min: tMin,
-        temperature_max: tMax,
-        icons: _icons,
-        humidity: _humidity
-      }, function () {});
-    }.bind(this)); //bind callback to the react component's 'this'
+    return { searchStr: '', weatherData: {} };
   },
   searchOnChange: function (e) {
-    this.setState({ searchStr: e.target.value });
+    this.setState({
+      searchStr: e.target.value
+    });
   },
   searchClick: function () {
-    console.log("searchClick --- " + Json.stringify(this.state.searchStr));
-    this.getWeatherData(this.state.searchStr);
+    console.log("searchClick --- " + this.state.searchStr);
+    helpers.getWeatherData(this.state.searchStr).then(weatherObject => {
+      this.setState({
+        weatherData: weatherObject
+      });
+    });
   },
   componentWillMount: function () {
-    this.getWeatherData(this.state.searchStr);
-  },
-  checkIconCode: function (code) {
-    let wiClass = "";
-
-    if (code === "01d") {
-      wiClass = "wi wi-day-sunny";
-    }if (code === "02d") {
-      wiClass = "wi wi-day-cloudy";
-    }if (code === "03d") {
-      wiClass = "wi wi-cloud";
-    }if (code === "04d") {
-      wiClass = "wi wi-cloudy";
-    }if (code === "09d") {
-      wiClass = "wi wi-day-showers";
-    }if (code === "10d") {
-      wiClass = "wi wi-day-rain";
-    }if (code === "11d") {
-      wiClass = "wi wi-day-thunderstorm";
-    }if (code === "13d") {
-      wiClass = "wi wi-day-snow";
-    }if (code === "50d") {
-      wiClass = "wi wi-day-fog";
-    }if (code === "01n") {
-      wiClass = "wi wi-night-clear";
-    }if (code === "02n") {
-      wiClass = "wi wi-night-partly-cloudy";
-    }if (code === "03n") {
-      wiClass = "wi wi-night-cloudy";
-    }if (code === "04n") {
-      wiClass = "wi wi wi-cloudy";
-    }if (code === "09n") {
-      wiClass = "wi wi-night-showers";
-    }if (code === "10n") {
-      wiClass = "wi wi-night-rain";
-    }if (code === "11n") {
-      wiClass = "wi wi-night-thunderstorm";
-    }if (code === "13n") {
-      wiClass = "wi wi-night-snow";
-    }if (code === "50n") {
-      wiClass = "wi wi-night-fog";
-    }
-
-    return wiClass;
+    this.setState({
+      searchStr: this.props.location,
+      weatherData: this.props.weatherData
+    });
   },
   render: function () {
     let panelIndex = `panel-${this.props.index}`;
@@ -21766,11 +21670,11 @@ let ListItem = React.createClass({
       paddingTop: 15
     };
 
-    console.log(this.state.temperature_day + '\n' + this.state.temperature_min + '\n' + this.state.temperature_max + '\n' + this.state.icons + '\n' + this.state.humidity);
+    console.log("Tile --- render --- " + JSON.stringify(this.state.weatherData.formattedTime));
 
     return React.createElement(
       'div',
-      { style: colHeight, className: 'col-md-15' },
+      { style: colHeight, className: 'col-sm-15 col-md-15 col-lg-15' },
       React.createElement(
         'div',
         { id: panelIndex, style: panelMargin, className: 'panel' },
@@ -21783,7 +21687,7 @@ let ListItem = React.createClass({
             React.createElement(
               'div',
               { className: 'col-xs-12 col-md-12' },
-              React.createElement(SearchBox, { date: this.state.formattedTime[0], location: this.state.searchStr, backgroundColor: panelHeaderStyle.background, searchOnChange: this.searchOnChange, searchClick: this.searchClick })
+              React.createElement(SearchBox, { date: this.state.weatherData.formattedTime[0], location: this.state.searchStr, backgroundColor: panelHeaderStyle.background, searchOnChange: this.searchOnChange, searchClick: this.searchClick })
             ),
             React.createElement(
               'div',
@@ -21791,7 +21695,7 @@ let ListItem = React.createClass({
               React.createElement(
                 'h1',
                 { className: 'text-center' },
-                React.createElement('i', { className: this.checkIconCode(this.state.icons[0]) })
+                React.createElement('i', { className: helpers.checkIconCode(this.state.weatherData.icons[0]) })
               )
             ),
             React.createElement(
@@ -21800,7 +21704,7 @@ let ListItem = React.createClass({
               React.createElement(
                 'h1',
                 { className: 'text-center' },
-                this.state.temperature_day[0],
+                this.state.weatherData.temperature_day[0],
                 React.createElement(
                   'sup',
                   null,
@@ -21835,7 +21739,7 @@ let ListItem = React.createClass({
                   'i',
                   { className: 'wi wi-humidity' },
                   ' ',
-                  this.state.humidity[0],
+                  this.state.weatherData.humidity[0],
                   '%'
                 )
               )
@@ -21860,13 +21764,13 @@ let ListItem = React.createClass({
                   React.createElement(
                     'p',
                     { className: 'text-center', style: paddingTop10 },
-                    this.state.longDate[1]
+                    this.state.weatherData.longDate[1]
                   )
                 ),
                 React.createElement(
                   'div',
                   { className: 'col-xs-2 col-md-2' },
-                  React.createElement('i', { style: paddingTop15, className: this.checkIconCode(this.state.icons[1]), 'aria-hidden': 'true' })
+                  React.createElement('i', { style: paddingTop15, className: helpers.checkIconCode(this.state.weatherData.icons[1]), 'aria-hidden': 'true' })
                 ),
                 React.createElement(
                   'div',
@@ -21874,14 +21778,14 @@ let ListItem = React.createClass({
                   React.createElement(
                     'p',
                     { className: 'text-center', style: paddingTop10 },
-                    this.state.temperature_min[1],
+                    this.state.weatherData.temperature_min[1],
                     React.createElement(
                       'sup',
                       null,
                       '\xB0'
                     ),
                     ' / ',
-                    this.state.temperature_max[1],
+                    this.state.weatherData.temperature_max[1],
                     React.createElement(
                       'sup',
                       null,
@@ -21903,13 +21807,13 @@ let ListItem = React.createClass({
                   React.createElement(
                     'p',
                     { className: 'text-center', style: paddingTop10 },
-                    this.state.longDate[2]
+                    this.state.weatherData.longDate[2]
                   )
                 ),
                 React.createElement(
                   'div',
                   { className: 'col-xs-2 col-md-2' },
-                  React.createElement('i', { style: paddingTop15, className: this.checkIconCode(this.state.icons[2]), 'aria-hidden': 'true' })
+                  React.createElement('i', { style: paddingTop15, className: helpers.checkIconCode(this.state.weatherData.icons[2]), 'aria-hidden': 'true' })
                 ),
                 React.createElement(
                   'div',
@@ -21917,14 +21821,14 @@ let ListItem = React.createClass({
                   React.createElement(
                     'p',
                     { className: 'text-center', style: paddingTop10 },
-                    this.state.temperature_min[2],
+                    this.state.weatherData.temperature_min[2],
                     React.createElement(
                       'sup',
                       null,
                       '\xB0'
                     ),
                     ' / ',
-                    this.state.temperature_min[2],
+                    this.state.weatherData.temperature_min[2],
                     React.createElement(
                       'sup',
                       null,
@@ -21946,13 +21850,13 @@ let ListItem = React.createClass({
                   React.createElement(
                     'p',
                     { className: 'text-center', style: paddingTop10 },
-                    this.state.longDate[3]
+                    this.state.weatherData.longDate[3]
                   )
                 ),
                 React.createElement(
                   'div',
                   { className: 'col-xs-2 col-md-2' },
-                  React.createElement('i', { style: paddingTop15, className: this.checkIconCode(this.state.icons[3]), 'aria-hidden': 'true' })
+                  React.createElement('i', { style: paddingTop15, className: helpers.checkIconCode(this.state.weatherData.icons[3]), 'aria-hidden': 'true' })
                 ),
                 React.createElement(
                   'div',
@@ -21960,14 +21864,14 @@ let ListItem = React.createClass({
                   React.createElement(
                     'p',
                     { className: 'text-center', style: paddingTop10 },
-                    this.state.temperature_min[3],
+                    this.state.weatherData.temperature_min[3],
                     React.createElement(
                       'sup',
                       null,
                       '\xB0'
                     ),
                     ' / ',
-                    this.state.temperature_min[3],
+                    this.state.weatherData.temperature_min[3],
                     React.createElement(
                       'sup',
                       null,
@@ -21989,13 +21893,13 @@ let ListItem = React.createClass({
                   React.createElement(
                     'p',
                     { className: 'text-center', style: paddingTop10 },
-                    this.state.longDate[4]
+                    this.state.weatherData.longDate[4]
                   )
                 ),
                 React.createElement(
                   'div',
                   { className: 'col-xs-2 col-md-2' },
-                  React.createElement('i', { style: paddingTop15, className: this.checkIconCode(this.state.icons[4]), 'aria-hidden': 'true' })
+                  React.createElement('i', { style: paddingTop15, className: helpers.checkIconCode(this.state.weatherData.icons[4]), 'aria-hidden': 'true' })
                 ),
                 React.createElement(
                   'div',
@@ -22003,14 +21907,14 @@ let ListItem = React.createClass({
                   React.createElement(
                     'p',
                     { className: 'text-center', style: paddingTop10 },
-                    this.state.temperature_min[4],
+                    this.state.weatherData.temperature_min[4],
                     React.createElement(
                       'sup',
                       null,
                       '\xB0'
                     ),
                     ' / ',
-                    this.state.temperature_min[4],
+                    this.state.weatherData.temperature_min[4],
                     React.createElement(
                       'sup',
                       null,
@@ -22027,15 +21931,44 @@ let ListItem = React.createClass({
   }
 });
 
-module.exports = ListItem;
+module.exports = Tile;
 
-},{"../services/httpservice":191,"./SearchBox.jsx":186,"circular-json":1,"react":184}],188:[function(require,module,exports){
+},{"../helpers/helpers":190,"./SearchBox.jsx":186,"circular-json":1,"react":184}],188:[function(require,module,exports){
 let React = require('react');
 let Tile = require('./Tile.jsx');
+let helpers = require('../helpers/helpers');
 
 let List = React.createClass({
   displayName: 'List',
   //Defining React component object
+  getInitialState: function () {
+    //called only once when the component loads
+    return { searchStr: 'Madrid, Spain', weatherData: {}, tileList: [] };
+  },
+  createTileList: function () {
+    let list = [];
+    let tileHeaderColors = ['#ec4444', '#79b7ae', '#e68e4f', '#a6a43b', '#f27e7f', '#817871', '#367db5', '#357cb4', '#9770a7', '#ce4571', '#3f3f3f'];
+
+    for (i = 0; i < 10; i++) {
+      list.push(React.createElement(Tile, { location: this.state.searchStr, weatherData: this.state.weatherData, index: i, headerColor: tileHeaderColors[Math.floor(Math.random() * 10) + 1] }));
+    }
+
+    return list;
+  },
+  componentWillMount: function () {
+    helpers.getWeatherData(this.state.searchStr).then(weatherObject => {
+      this.setState({
+        weatherData: weatherObject
+      }, function () {
+        this.setState({
+          tileList: this.createTileList()
+        });
+        console.log(`tileList --- componentWillMount: ${this.state.tileList}`);
+      });
+
+      console.log(`weatherObj --- componentWillMount: ${JSON.stringify(this.state.weatherData)}`);
+    });
+  },
   render: function () {
     let rowWidth = {
       width: "95%",
@@ -22045,13 +21978,6 @@ let List = React.createClass({
     let colMarginBottom = {
       marginBottom: 80
     };
-
-    let tileList = [];
-    let tileHeaderColors = ['#ec4444', '#79b7ae', '#e68e4f', '#a6a43b', '#f27e7f', '#817871', '#367db5', '#357cb4', '#9770a7', '#ce4571', '#3f3f3f'];
-
-    for (i = 0; i < 10; i++) {
-      tileList.push(React.createElement(Tile, { index: i, headerColor: tileHeaderColors[Math.floor(Math.random() * 10) + 1] }));
-    }
 
     return React.createElement(
       'div',
@@ -22065,7 +21991,7 @@ let List = React.createClass({
           React.createElement(
             'div',
             { className: 'row' },
-            tileList
+            this.state.tileList
           )
         )
       )
@@ -22075,7 +22001,7 @@ let List = React.createClass({
 
 module.exports = List;
 
-},{"./Tile.jsx":187,"react":184}],189:[function(require,module,exports){
+},{"../helpers/helpers":190,"./Tile.jsx":187,"react":184}],189:[function(require,module,exports){
 let React = require('react');
 let TileList = require('./TileList.jsx');
 
@@ -22094,13 +22020,180 @@ let WeatherApp = React.createClass({
 module.exports = WeatherApp;
 
 },{"./TileList.jsx":188,"react":184}],190:[function(require,module,exports){
+let HTTP = require('../services/httpservice');
+
+let calculateTime = unixTime => {
+  let date = new Date(unixTime * 1000);
+  // Date format: MM/DD/YYYY
+  let tDate = date.getMonth() + "/" + date.getDate() + "/" + date.getFullYear();
+  // Hours part from the timestamp
+  let hours = date.getHours();
+  // Minutes part from the timestamp
+  let minutes = "0" + date.getMinutes();
+  // Seconds part from the timestamp
+  let seconds = "0" + date.getSeconds();
+  let formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+  let longDate = date.toLocaleString('en-GB', { day: 'numeric', month: 'long' });
+
+  let timeObject = {
+    unixTime: unixTime,
+    date: date,
+    tDate: tDate,
+    hours: hours,
+    minutes: minutes,
+    seconds: seconds,
+    formattedTime: formattedTime,
+    longDate: longDate
+  };
+
+  return timeObject;
+};
+
+let checkIconCode = code => {
+  let wiClass = "";
+
+  if (code === "01d") {
+    wiClass = "wi wi-day-sunny";
+  }if (code === "02d") {
+    wiClass = "wi wi-day-cloudy";
+  }if (code === "03d") {
+    wiClass = "wi wi-cloud";
+  }if (code === "04d") {
+    wiClass = "wi wi-cloudy";
+  }if (code === "09d") {
+    wiClass = "wi wi-day-showers";
+  }if (code === "10d") {
+    wiClass = "wi wi-day-rain";
+  }if (code === "11d") {
+    wiClass = "wi wi-day-thunderstorm";
+  }if (code === "13d") {
+    wiClass = "wi wi-day-snow";
+  }if (code === "50d") {
+    wiClass = "wi wi-day-fog";
+  }if (code === "01n") {
+    wiClass = "wi wi-night-clear";
+  }if (code === "02n") {
+    wiClass = "wi wi-night-partly-cloudy";
+  }if (code === "03n") {
+    wiClass = "wi wi-night-cloudy";
+  }if (code === "04n") {
+    wiClass = "wi wi wi-cloudy";
+  }if (code === "09n") {
+    wiClass = "wi wi-night-showers";
+  }if (code === "10n") {
+    wiClass = "wi wi-night-rain";
+  }if (code === "11n") {
+    wiClass = "wi wi-night-thunderstorm";
+  }if (code === "13n") {
+    wiClass = "wi wi-night-snow";
+  }if (code === "50n") {
+    wiClass = "wi wi-night-fog";
+  }
+
+  return wiClass;
+};
+
+let getWeatherData = location => {
+  return new Promise((resolve, reject) => {
+    HTTP.get(`q=${location}&cnt=5&units=imperial&appid=3ff527abfa8edebc287dd4bcf540c174`).then(function (data) {
+      let _formattedTime = [];
+      let _longDate = [];
+      let tDay = [];
+      let tMin = [];
+      let tMax = [];
+      let _icons = [];
+      let _humidity = [];
+      let weatherObject = {};
+
+      for (i = 0; i < data.list.length; i++) {
+        let dt = calculateTime(data.list[i].dt);
+        let formatted_time = dt.tDate + " " + dt.formattedTime;
+        let long_date = dt.longDate;
+
+        _formattedTime[i] = formatted_time;
+        _longDate[i] = long_date;
+        tDay[i] = parseInt(data.list[i].temp.day);
+        tMin[i] = parseInt(data.list[i].temp.min);
+        tMax[i] = parseInt(data.list[i].temp.max);
+        _icons[i] = data.list[i].weather[0].icon;
+        _humidity[i] = parseInt(data.list[i].humidity);
+      }
+
+      weatherObject = {
+        formattedTime: _formattedTime,
+        longDate: _longDate,
+        temperature_day: tDay,
+        temperature_min: tMin,
+        temperature_max: tMax,
+        icons: _icons,
+        humidity: _humidity
+      };
+
+      console.log(`Weather Object --- helpers ---: ${JSON.stringify(weatherObject)}`);
+
+      resolve(weatherObject);
+    }).catch(error => {
+      reject(error);
+    });
+  });
+};
+
+// let getWeatherData = (location) => {
+//   HTTP.get(`q=${location}&cnt=5&units=imperial&appid=3ff527abfa8edebc287dd4bcf540c174`)
+//     .then( function(data){
+//       let _formattedTime = [];
+//       let _longDate = [];
+//       let tDay  = [];
+//       let tMin  = [];
+//       let tMax  = [];
+//       let _icons = [];
+//       let _humidity = [];
+//       let weatherObject = {};
+//
+//       for(i=0; i<data.list.length; i++){
+//         let dt = calculateTime(data.list[i].dt);
+//         let formatted_time = dt.tDate + " " + dt.formattedTime;
+//         let long_date = dt.longDate;
+//
+//         _formattedTime[i] = formatted_time;
+//         _longDate[i] = long_date;
+//         tDay[i] = parseInt(data.list[i].temp.day);
+//         tMin[i] = parseInt(data.list[i].temp.min);
+//         tMax[i] = parseInt(data.list[i].temp.max);
+//         _icons[i] = data.list[i].weather[0].icon;
+//         _humidity[i] = parseInt(data.list[i].humidity);
+//       }
+//
+//       weatherObject = {
+//         formattedTime: _formattedTime,
+//         longDate: _longDate,
+//         temperature_day: tDay,
+//         temperature_min: tMin,
+//         temperature_max: tMax,
+//         icons: _icons,
+//         humidity: _humidity
+//       };
+//
+//       console.log(`Weather Object --- helpers ---: ${JSON.stringify(weatherObject)}`);
+//
+//       return weatherObject;
+//   });
+// }
+
+module.exports = {
+  calculateTime,
+  checkIconCode,
+  getWeatherData
+};
+
+},{"../services/httpservice":192}],191:[function(require,module,exports){
 let React = require('react');
 let ReactDOM = require('react-dom');
 let WeatherApp = require('./components/WeatherApp.jsx');
 
-ReactDOM.render(React.createElement(WeatherApp, null), document.getElementById('main')); //this.prop.title in ListManager component
+ReactDOM.render(React.createElement(WeatherApp, null), document.getElementById('main'));
 
-},{"./components/WeatherApp.jsx":189,"react":184,"react-dom":32}],191:[function(require,module,exports){
+},{"./components/WeatherApp.jsx":189,"react":184,"react-dom":32}],192:[function(require,module,exports){
 let Fetch = require("whatwg-fetch");
 let baseUrl = "https://api.openweathermap.org/data/2.5/forecast/daily?";
 
@@ -22116,4 +22209,4 @@ let service = {
 
 module.exports = service;
 
-},{"whatwg-fetch":185}]},{},[190]);
+},{"whatwg-fetch":185}]},{},[191]);

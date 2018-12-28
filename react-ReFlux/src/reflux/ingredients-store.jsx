@@ -31,7 +31,7 @@ let IngredientStore = Reflux.createStore({
       HTTP.post('/ingredients', ingredient)
         .then(function(response){
           this.getIngredients();    //Re-load Ingredients list from the server
-        }.bidn(this));
+        }.bind(this));
     },  //Refresh Function
     fireUpdate: function(){  //argument data passed in
       this.trigger('change', this.ingredients);     //'EMITTER / PUBLISHER' in the OBSERVER DESIGN PATTERN,

@@ -11,7 +11,7 @@ let Card = React.createClass({
        paddingBottom: 20
     }
 
-    let icons ={
+    let icons = {
       width: 70,
       fontSize: 70,
       color: "#003680",

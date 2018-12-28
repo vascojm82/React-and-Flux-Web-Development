@@ -11,7 +11,7 @@ let List = React.createClass({
     getInitialState: function() {
       return{ingredients: [], newText: ""};
     },
-    componentWillMount: function(){
+    componentWillMount: function() {
       Actions.getIngredients();
     },
     onChange: function(event, data) {
@@ -19,12 +19,12 @@ let List = React.createClass({
         ingredients: data
       });
     },
-    onInputChange: function(e){
+    onInputChange: function(e) {
       this.setState({
         newText: e.target.value
       });
     },
-    onClick: function(e){
+    onClick: function(e) {
       if(this.state.newText){
         Actions.postIngredient(this.state.newText);
       }

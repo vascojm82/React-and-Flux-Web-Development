@@ -24,7 +24,7 @@ let NavBar = React.createClass({
       linkStyle.color = this.props.linkColor;
 
     let createLinkItem = (item, index) => {
-      return <NavItem key={index} href={item.href} title={item.title} aStyle={linkStyle} />;
+      return <NavItem currentPage={this.props.currentPage} key={index} href={item.href} title={item.title} aStyle={linkStyle} onClick={this.props.onClick} />;
     };
 
     return(

@@ -40,7 +40,7 @@ let Main = React.createClass({
         </div>
         <div className="col-md-6">
           <div className="row">
-            <Description description={this.state.description}/>
+            <Description description={this.state.description} />
             <DetailsPanel characteristics={this.state.characteristics} />
             <StatsChart />
           </div>

@@ -17,7 +17,7 @@ let ProductPage = require("./components/ProductPage.jsx");
 let Routes = (
     <Router history={History}>
       <Route path="/" component={BasePage}>
-        <IndexRoute component={HomePage} />
+        <IndexRoute render={ () => {<HomePage onClick={BasePage.onClick} />} } />
         <Route path="/product/:productId" component={ProductPage} />
       </Route>
     </Router>

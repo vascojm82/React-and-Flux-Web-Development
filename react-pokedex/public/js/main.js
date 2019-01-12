@@ -71146,6 +71146,9 @@ let TileList = React.createClass({
   componentWillMount: function () {
     Actions.getPokemons();
   },
+  componentWillUnMount: function () {
+    this.mixins.stop();
+  },
   onChange: function (event, data) {
     this.setState({
       pokemons: data

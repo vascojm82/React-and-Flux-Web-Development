@@ -8,8 +8,8 @@ let HomePage = React.createClass({
       <div>
         <h1>Home</h1>
         <ul>
-          <li><Link to="/product/55">iOS Course</Link></li>
-          <li><Link to="/product/67">React Course</Link></li>
+          <li><Link to="/product/55" onClick={() => {this.props.onClick("iOS Course")}}>iOS Course</Link></li>
+          <li><Link to="/product/67" onClick={() => {this.props.onClick("React Course")}}>React Course</Link></li>
         </ul>
       </div>
     );

@@ -30169,7 +30169,9 @@ let Routes = React.createElement(
   React.createElement(
     Route,
     { path: "/", component: BasePage },
-    React.createElement(IndexRoute, { component: HomePage }),
+    React.createElement(IndexRoute, { render: () => {
+        React.createElement(HomePage, { onClick: BasePage.onClick });
+      } }),
     React.createElement(Route, { path: "/product/:productId", component: ProductPage })
   )
 );
@@ -30185,6 +30187,15 @@ let Favicon = require('react-favicon');
 let BasePage = React.createClass({
   displayName: "BasePage",
 
+  getInitialState: function () {
+    return { currentPage: "Home" };
+  },
+  onClick: function (selectedPage) {
+    console.log("onClick(selectedPage) ---BasePage---: " + selectedPage);
+    this.setState({
+      currentPage: selectedPage
+    });
+  },
   render: function () {
     let navLinks = [{
       title: "Home",
@@ -30201,7 +30212,7 @@ let BasePage = React.createClass({
       "div",
       { className: "container-fluid" },
       React.createElement(Favicon, { url: "../img/favicon.ico" }),
-      React.createElement(NavBar, { bgColor: "#FFF", titleColor: "#3097d1", navData: navLinks }),
+      React.createElement(NavBar, { bgColor: "#FFF", titleColor: "#3097d1", navData: navLinks, currentPage: this.state.currentPage, onClick: this.onClick }),
       React.createElement(
         "div",
         { className: "container" },
@@ -30251,7 +30262,9 @@ let HomePage = React.createClass({
           null,
           React.createElement(
             Link,
-            { to: "/product/55" },
+            { to: "/product/55", onClick: () => {
+                this.props.onClick("iOS Course");
+              } },
             "iOS Course"
           )
         ),
@@ -30260,7 +30273,9 @@ let HomePage = React.createClass({
           null,
           React.createElement(
             Link,
-            { to: "/product/67" },
+            { to: "/product/67", onClick: () => {
+                this.props.onClick("React Course");
+              } },
             "React Course"
           )
         )
@@ -30503,7 +30518,7 @@ let NavBar = React.createClass({
     if (this.props.linkColor) linkStyle.color = this.props.linkColor;
 
     let createLinkItem = (item, index) => {
-      return React.createElement(NavItem, { key: index, href: item.href, title: item.title, aStyle: linkStyle });
+      return React.createElement(NavItem, { currentPage: this.props.currentPage, key: index, href: item.href, title: item.title, aStyle: linkStyle, onClick: this.props.onClick });
     };
 
     return React.createElement(
@@ -30565,12 +30580,54 @@ let NavItem = React.createClass({
     });
   },
   render: function () {
+    let activePage = "",
+        hover_li = {},
+        hover_a = {};
+
+    //Active Page State
+    if (this.props.currentPage === this.props.title) {
+      //If the state for the currentPage(from NavBar component) and the name of the link are equal,
+      activePage = "active"; //then that's the active page/link that was clicked
+    }
+    //*********************
+
+    //Hover State
+    if (this.state.hover) {
+      //If this.state.hover === true
+      hover_li = {
+        background: "#000",
+        opacity: .5
+      };
+
+      hover_a = {
+        color: "#fff"
+      };
+
+      activePage = ""; //So 'hover' effect will apply instead of the CSS in the bootstrap 'active' class
+    } else {
+      //if this.state.hover === false
+      hover_li = {
+        background: "inherit"
+      };
+
+      hover_a = this.props.aStyle;
+
+      //If the link happens to be the current 'active' page
+      if (this.props.currentPage === this.props.title) {
+        //If the state for the currentPage(from NavBar component) and the name of the link are equal,
+        activePage = "active"; //then that's the active page/link that was clicked
+      }
+    }
+    //*********************
+
     return React.createElement(
       "li",
-      { className: this.state.hover ? "active" : "", onMouseOver: this.mouseOver, onMouseOut: this.mouseOut },
+      { className: activePage, style: hover_li, onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, onClick: () => {
+          this.props.onClick(this.props.title);
+        } },
       React.createElement(
         Link,
-        { style: this.props.aStyle, to: this.props.href },
+        { style: hover_a, to: this.props.href },
         this.props.title
       )
     );

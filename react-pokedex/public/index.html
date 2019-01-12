@@ -12,6 +12,19 @@
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <link href="css/hover.css" rel="stylesheet" media="all" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://www.gstatic.com/firebasejs/5.7.1/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyAgsMLzAo3wJWayL5LAwYREaiRnxFrc0DY",
+        authDomain: "react-pokedex.firebaseapp.com",
+        databaseURL: "https://react-pokedex.firebaseio.com",
+        projectId: "react-pokedex",
+        storageBucket: "",
+        messagingSenderId: "900579720841"
+      };
+      firebase.initializeApp(config);
+    </script>
   </head>
   <body>
     <div id="main"></div>

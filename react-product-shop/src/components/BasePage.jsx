@@ -4,7 +4,16 @@ let LeadCapture = require("./forms/LeadCapture.jsx");
 let Favicon = require('react-favicon');
 
 let BasePage = React.createClass({
-  render: function(){    
+  getInitialState: function(){
+    return{currentPage: "Home"};
+  },
+  onClick: function(selectedPage){
+    console.log("onClick(selectedPage) ---BasePage---: " + selectedPage);
+    this.setState({
+      currentPage: selectedPage
+    });
+  },
+  render: function(){
     let navLinks = [
       {
         title: "Home",
@@ -23,7 +32,7 @@ let BasePage = React.createClass({
     return(
       <div className="container-fluid">
         <Favicon url="../img/favicon.ico" />
-        <NavBar bgColor="#FFF" titleColor="#3097d1" navData={navLinks} />
+        <NavBar bgColor="#FFF" titleColor="#3097d1" navData={navLinks} currentPage={this.state.currentPage} onClick={this.onClick} />
         <div className="container">
           <div className="row">
             <div className="col-sm-9">

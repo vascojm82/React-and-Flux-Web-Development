@@ -1,6 +1,22 @@
 let React = require('react');
+let Actions = require('../../reflux/actions.jsx');
 
 let Header = React.createClass({
+  getInitialState: function() {
+    return{searchTerm: ''};
+  },
+  onChange: function(e){
+    this.setState({
+      searchTerm: e.target.value
+    });
+  },
+  onClick: function(){
+    this.setState({
+      searchTerm: ''
+    });
+
+    Actions.searchPokemon(this.state.searchTerm);
+  },
   render: function(){
     let headerStyle ={
       minHeight: 100,
@@ -15,7 +31,9 @@ let Header = React.createClass({
       marginBottom: 10,
       border: "2px solid #616161",
       borderRadius: 4,
-      width: "80%"
+      width: "80%",
+      color: '#000',
+      display: 'inline-block'
     }
 
     let btnStyle={
@@ -29,9 +47,9 @@ let Header = React.createClass({
         <div className="col-md-12">
           <div className="row">
             <div className="col-md-4">
-              <div class="form-group">
+              <div className="form-group">
                 <h4>Name or Number</h4>
-                <input style={inputStyle} type="text" class="form-control" id="pokemon" /><button type="button" style={btnStyle} className="btn btn-warning"><i className="fa fa-search"></i></button>
+                <input style={inputStyle} type="text" className="form-control" id="pokemon" onChange={this.onChange} value={this.state.searchTerm} /><button type="button" style={btnStyle} className="btn btn-warning" onClick={this.onClick}><i className="fa fa-search"></i></button>
               </div>
             </div>
           </div>

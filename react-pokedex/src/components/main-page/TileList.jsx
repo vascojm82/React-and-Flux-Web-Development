@@ -13,13 +13,16 @@ let TileList = React.createClass({
     return{pokemons: [], tileList:[]};
   },
   componentWillMount: function() {
-    Actions.getPokemons();
+    if(this.state.tileList.length < 1){
+      Actions.getPokemons("partial");
+    }
   },
   componentWillUnMount: function(){
     this.mixins.stop();
   },
-  onChange: function(event, data) {
+  onChange: function(event, data){
     this.setState({
+      tileList: [],
       pokemons: data
     },() => {
       console.log("this.state.pokemons", this.state.pokemons);
@@ -39,7 +42,7 @@ let TileList = React.createClass({
         }
 
         this.state.pokemons.forEach( (item, index) => {
-          pokemonsList.push(<Tile id={item.id} url={item.sprites.front_default} name={item.name} badges={getBadges} types={item.types} />);
+          pokemonsList.push(<Tile key={index} id={item.id} url={item.sprites.front_default} name={item.name} badges={getBadges} types={item.types} />);
         });
 
         return pokemonsList;
@@ -49,6 +52,26 @@ let TileList = React.createClass({
         tileList: createList()
       })
     });
+  },
+  sort: async function(order){
+    let targetArray = this.state.pokemons;
+
+    switch(order){
+      case 'lowest':
+        await targetArray.sort(function(a, b){return a.id - b.id});
+        break;
+      case 'highest':
+        await targetArray.sort(function(a, b){return b.id - a.id});
+        break;
+      case 'alpha':
+        await targetArray.sort(function(a, b){return a.name.localeCompare(b.name)});
+        break;
+      case 'zeta':
+        await targetArray.sort(function(a, b){return b.name.localeCompare(a.name)});
+        break;
+    }
+
+    Actions.setPokemons(targetArray);
   },
   render: function(){
     let containerStyle= {
@@ -66,10 +89,14 @@ let TileList = React.createClass({
       <div style={containerStyle} className="row">
         <div className="col-md-12">
           <div style={btnRowStyle} className="row">
-            <RandomPokemonBtn />
-            <PokeSort />
+            <div className="col-md-6">
+              <RandomPokemonBtn />
+            </div>
+            <div className="col-md-6">
+              <PokeSort sort={this.sort} />
+            </div>
           </div>
-          <div className="row">
+          <div className="row tileList">
             {this.state.tileList}
           </div>
         </div>

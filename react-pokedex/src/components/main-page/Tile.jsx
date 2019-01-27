@@ -15,7 +15,7 @@ let Tile = React.createClass({
           .then(async (data) => {
             let i = 0;
             await data.forEach( (item, index) => {
-              badgesList.push(<Badge text={item} color={colors[i]} />);
+              badgesList.push(<Badge key={index} text={item} color={colors[i]} />);
               (i<3)? i++: i=0;
             });
 
@@ -60,7 +60,7 @@ let Tile = React.createClass({
     }
 
     return(
-      <div className="col-xs-8 col-xs-offset-2 col-sm-3 col-sm-offset-2 col-md-3 col-md-offset-0">
+      <div className="col-xs-12 col-sm-5 col-sm-offset-1 col-md-5 col-md-offset-1 col-lg-3 col-lg-offset-0">
         <div id={this.props.cardNum} className="card character hvr-bounce-in" onMouseEnter={this.onMouseOver} onClick={this.onClick}>
           <div style={imageBackground}>
             <img style={img} className="tile-img image-responsive" src={this.state.pokePic} />

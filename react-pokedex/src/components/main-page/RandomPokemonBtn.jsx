@@ -7,7 +7,8 @@ let RandomPokemonBtn = React.createClass({
       color: "#fff",
       border: "none",
       padding: "10px 70px",
-      borderRadius: 5
+      borderRadius: 5,
+      marginBottom: 15
     }
 
     return(

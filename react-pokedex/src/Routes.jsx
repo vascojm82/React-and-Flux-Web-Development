@@ -16,6 +16,7 @@ let Routes = (
     <Router history={hashHistory}>
       <Route component={App}>
         <Route path="/" component={HomePage} />
+        <Route path="/pokemon/:id" component={Details} />
       </Route>
     </Router>
   </div>

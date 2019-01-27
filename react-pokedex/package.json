@@ -18,9 +18,9 @@
   },
   "homepage": "",
   "dependencies": {
-    "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babelify": "^7.3.0",
+    "circular-json": "^0.5.9",
     "history": "^1.13.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",

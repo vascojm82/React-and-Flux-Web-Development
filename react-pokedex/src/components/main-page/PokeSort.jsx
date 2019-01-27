@@ -12,13 +12,13 @@ let PokeSort = React.createClass({
 
     return(
       <div className="dropdown pull-right">
-        <button style={dropDownStyle} className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Lowest Number (First)&nbsp;
+        <button style={dropDownStyle} className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select order &nbsp;
         <span className="caret"></span></button>
         <ul className="dropdown-menu">
-          <li><a href="#">Lowest Number (First)</a></li>
-          <li><a href="#">Highest Number (First)</a></li>
-          <li><a href="#">A-Z</a></li>
-          <li><a href="#">Z-A</a></li>
+          <li onClick={() => {this.props.sort('lowest')}}><a href="#">Lowest Number (First)</a></li>
+          <li onClick={() => {this.props.sort('highest')}}><a href="#">Highest Number (First)</a></li>
+          <li onClick={() => {this.props.sort('alpha')}}><a href="#">A-Z</a></li>
+          <li onClick={() => {this.props.sort('zeta')}}><a href="#">Z-A</a></li>
         </ul>
       </div>
     );

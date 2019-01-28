@@ -11,6 +11,7 @@ let Header = React.createClass({
     });
   },
   onClick: function(){
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
     this.setState({
       searchTerm: ''
     });

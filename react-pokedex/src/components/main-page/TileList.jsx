@@ -42,7 +42,7 @@ let TileList = React.createClass({
         }
 
         this.state.pokemons.forEach( (item, index) => {
-          pokemonsList.push(<Tile key={index} id={item.id} url={item.sprites.front_default} name={item.name} badges={getBadges} types={item.types} />);
+          pokemonsList.push(<Tile key={index} id={item.id} url={item.sprites.front_default} name={item.name} badges={getBadges} types={item.types} playMusic={this.props.playMusic} soundCollection={this.props.soundCollection} />);
         });
 
         return pokemonsList;
@@ -90,10 +90,10 @@ let TileList = React.createClass({
         <div className="col-md-12">
           <div style={btnRowStyle} className="row">
             <div className="col-md-6">
-              <RandomPokemonBtn />
+              <RandomPokemonBtn playMusic={this.props.playMusic} soundCollection={this.props.soundCollection} />
             </div>
             <div className="col-md-6">
-              <PokeSort sort={this.sort} />
+              <PokeSort sort={this.sort} playMusic={this.props.playMusic} soundCollection={this.props.soundCollection} />
             </div>
           </div>
           <div className="row tileList">

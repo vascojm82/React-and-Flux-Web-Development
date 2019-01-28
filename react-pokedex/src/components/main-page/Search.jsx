@@ -6,6 +6,8 @@ let Search = React.createClass({
     return{chevron: `fa fa-chevron-circle-down`, searchDropdown: `col-md-12`, revealAdvanceSearch:'row hideAdvancedSearch', advancedSearch: {}};
   },
   onClick: function(){
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+    
     if(this.state.chevron === `fa fa-chevron-circle-down`){
       this.setState({
         chevron: `fa fa-chevron-circle-up`,
@@ -27,6 +29,8 @@ let Search = React.createClass({
 
   },
   advancedSearchGo: function() {
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+
     let obj ={
       species: this.refs.species.value,
       type: this.refs.type.value,

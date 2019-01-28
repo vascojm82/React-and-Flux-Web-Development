@@ -1,29 +1,32 @@
 let React = require("react");
 let ReactDOM = require('react-dom');
+let Modal = require('../Modal.jsx');
+let MusicPlayer = require('../../helpers/jukebox.js');
 let Header = require("./Header.jsx");
 let Search = require("./Search.jsx");
 let TileList = require("./TileList.jsx");
-let MusicPlayer = require('../../helpers/jukebox.js');
-let Modal = require('../Modal.jsx');
 
 let Main = React.createClass({
   getInitialState: function(){     //called only once when the component loads
-    return { tileList: '', modal:'' };
+    return { tileList: '', modal:'', header: '', search: ''  };
   },
   toggleModal: function(){
-    console.log("Modal: ", $(ReactDOM.findDOMNode(this.refs.modal)));
+    console.log("$('#openingModal'): ", $('#openingModal'));
+    console.log("$(ReactDOM.findDOMNode(this.refs.modal)): ", $(ReactDOM.findDOMNode(this.refs.modal)));
     $(ReactDOM.findDOMNode(this.refs.modal)).modal();
+    $('#openingModal').modal('show');
   },
   componentWillMount: function(){
     MusicPlayer.initializeJukebox()     //Promesified the 'MusicPlayer' (Jukebox) to force synchronicity.
       .then(function(jukebox){
         this.setState({
-          tileList: <TileList playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} ref={ref => this.refs.tileList=ref} />,
-          modal:    <Modal playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} title="Welcome to my Clicky Game App" subtitle1="Click on an image to earn points," subtitle2="but don't click on any more than once!" ref={(ref) => {this.refs.modal=ref;}} />
+          header: <Header playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} />,
+          search: <Search playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} />,
+          tileList: <TileList playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} />,
+          modal:    <Modal playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} title="Welcome to React Pokedex" subtitle1="Click on any of the Pokemons," subtitle2="to see more information about it." ref={(ref) => {this.refs.modal = ref}} />
         }, () => {
           console.log("this.state.modal ---componentWillMount--- : ", this.state.modal);
-          console.log("this.state.tileList ---componentWillMount--- : ", this.state.tileList);
-          console.log("this.refs.tileList ---componentWillMount--- : ", this.refs.tileList);
+          console.log("this.refs.modal ---componentWillMount--- : ", this.refs.modal);
           this.toggleModal();
         });
       }.bind(this));
@@ -31,9 +34,10 @@ let Main = React.createClass({
   render: function(){
     return(
       <div className="row">
-        <Header />
-        <Search />
+        {this.state.header}
+        {this.state.search}
         {this.state.tileList}
+        {this.state.modal}
       </div>
     );
   }

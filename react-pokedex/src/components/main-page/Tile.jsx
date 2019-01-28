@@ -31,6 +31,12 @@ let Tile = React.createClass({
         });
       });
   },
+  onMouseOver: function(){
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
+  onClick: function(){
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+  },
   render: function(){
     let imageBackground= {
       background: "#f2f2f2",

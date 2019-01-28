@@ -71327,6 +71327,7 @@ let Header = React.createClass({
     });
   },
   onClick: function () {
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
     this.setState({
       searchTerm: ''
     });
@@ -71406,46 +71407,50 @@ module.exports = Header;
 },{"../../reflux/actions.jsx":546,"react":479}],538:[function(require,module,exports){
 let React = require("react");
 let ReactDOM = require('react-dom');
+let Modal = require('../Modal.jsx');
+let MusicPlayer = require('../../helpers/jukebox.js');
 let Header = require("./Header.jsx");
 let Search = require("./Search.jsx");
 let TileList = require("./TileList.jsx");
-let MusicPlayer = require('../../helpers/jukebox.js');
-let Modal = require('../Modal.jsx');
 
 let Main = React.createClass({
-  displayName: "Main",
+  displayName: 'Main',
 
   getInitialState: function () {
     //called only once when the component loads
-    return { tileList: '', modal: '' };
+    return { tileList: '', modal: '', header: '', search: '' };
   },
   toggleModal: function () {
-    console.log("Modal: ", $(ReactDOM.findDOMNode(this.refs.modal)));
+    console.log("$('#openingModal'): ", $('#openingModal'));
+    console.log("$(ReactDOM.findDOMNode(this.refs.modal)): ", $(ReactDOM.findDOMNode(this.refs.modal)));
     $(ReactDOM.findDOMNode(this.refs.modal)).modal();
+    $('#openingModal').modal('show');
   },
   componentWillMount: function () {
     MusicPlayer.initializeJukebox() //Promesified the 'MusicPlayer' (Jukebox) to force synchronicity.
     .then(function (jukebox) {
       this.setState({
-        tileList: React.createElement(TileList, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection, ref: ref => this.refs.tileList = ref }),
-        modal: React.createElement(Modal, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection, title: "Welcome to my Clicky Game App", subtitle1: "Click on an image to earn points,", subtitle2: "but don't click on any more than once!", ref: ref => {
+        header: React.createElement(Header, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
+        search: React.createElement(Search, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
+        tileList: React.createElement(TileList, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
+        modal: React.createElement(Modal, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection, title: 'Welcome to React Pokedex', subtitle1: 'Click on any of the Pokemons,', subtitle2: 'to see more information about it.', ref: ref => {
             this.refs.modal = ref;
           } })
       }, () => {
         console.log("this.state.modal ---componentWillMount--- : ", this.state.modal);
-        console.log("this.state.tileList ---componentWillMount--- : ", this.state.tileList);
-        console.log("this.refs.tileList ---componentWillMount--- : ", this.refs.tileList);
+        console.log("this.refs.modal ---componentWillMount--- : ", this.refs.modal);
         this.toggleModal();
       });
     }.bind(this));
   },
   render: function () {
     return React.createElement(
-      "div",
-      { className: "row" },
-      React.createElement(Header, null),
-      React.createElement(Search, null),
-      this.state.tileList
+      'div',
+      { className: 'row' },
+      this.state.header,
+      this.state.search,
+      this.state.tileList,
+      this.state.modal
     );
   }
 });
@@ -71456,8 +71461,15 @@ module.exports = Main;
 let React = require("react");
 
 let PokeSort = React.createClass({
-  displayName: "PokeSort",
+  displayName: 'PokeSort',
 
+  onMouseOver: function () {
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
+  onClick: function (sortMethod = null) {
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+    if (sortMethod != null) this.props.sort(sortMethod);
+  },
   render: function () {
     let dropDownStyle = {
       background: "#313131",
@@ -71468,59 +71480,51 @@ let PokeSort = React.createClass({
     };
 
     return React.createElement(
-      "div",
-      { className: "dropdown pull-right" },
+      'div',
+      { className: 'dropdown pull-right' },
       React.createElement(
-        "button",
-        { style: dropDownStyle, className: "btn btn-primary dropdown-toggle", type: "button", "data-toggle": "dropdown" },
-        "Select order \xA0",
-        React.createElement("span", { className: "caret" })
+        'button',
+        { style: dropDownStyle, onClick: () => this.onClick(), className: 'btn btn-primary dropdown-toggle', type: 'button', 'data-toggle': 'dropdown' },
+        'Select order \xA0',
+        React.createElement('span', { className: 'caret' })
       ),
       React.createElement(
-        "ul",
-        { className: "dropdown-menu" },
+        'ul',
+        { className: 'dropdown-menu' },
         React.createElement(
-          "li",
-          { onClick: () => {
-              this.props.sort('lowest');
-            } },
+          'li',
+          { onMouseEnter: this.onMouseOver, onClick: () => this.onClick('lowest') },
           React.createElement(
-            "a",
-            { href: "#" },
-            "Lowest Number (First)"
+            'a',
+            { href: '#' },
+            'Lowest Number (First)'
           )
         ),
         React.createElement(
-          "li",
-          { onClick: () => {
-              this.props.sort('highest');
-            } },
+          'li',
+          { onMouseEnter: this.onMouseOver, onClick: () => this.onClick('highest') },
           React.createElement(
-            "a",
-            { href: "#" },
-            "Highest Number (First)"
+            'a',
+            { href: '#' },
+            'Highest Number (First)'
           )
         ),
         React.createElement(
-          "li",
-          { onClick: () => {
-              this.props.sort('alpha');
-            } },
+          'li',
+          { onMouseEnter: this.onMouseOver, onClick: () => this.onClick('alpha') },
           React.createElement(
-            "a",
-            { href: "#" },
-            "A-Z"
+            'a',
+            { href: '#' },
+            'A-Z'
           )
         ),
         React.createElement(
-          "li",
-          { onClick: () => {
-              this.props.sort('zeta');
-            } },
+          'li',
+          { onMouseEnter: this.onMouseOver, onClick: () => this.onClick('zeta') },
           React.createElement(
-            "a",
-            { href: "#" },
-            "Z-A"
+            'a',
+            { href: '#' },
+            'Z-A'
           )
         )
       )
@@ -71536,6 +71540,9 @@ let React = require("react");
 let RandomPokemonBtn = React.createClass({
   displayName: "RandomPokemonBtn",
 
+  onClick: function () {
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+  },
   render: function () {
     let BtnStyle = {
       background: "rgb(0, 169, 220)",
@@ -71548,7 +71555,7 @@ let RandomPokemonBtn = React.createClass({
 
     return React.createElement(
       "button",
-      { className: "btn pull-left", style: BtnStyle },
+      { className: "btn pull-left", style: BtnStyle, onClick: this.onClick },
       React.createElement("i", { className: "fa fa-refresh" }),
       "\xA0 Surprise Me!"
     );
@@ -71568,6 +71575,8 @@ let Search = React.createClass({
     return { chevron: `fa fa-chevron-circle-down`, searchDropdown: `col-md-12`, revealAdvanceSearch: 'row hideAdvancedSearch', advancedSearch: {} };
   },
   onClick: function () {
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+
     if (this.state.chevron === `fa fa-chevron-circle-down`) {
       this.setState({
         chevron: `fa fa-chevron-circle-up`,
@@ -71588,6 +71597,8 @@ let Search = React.createClass({
     }
   },
   advancedSearchGo: function () {
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+
     let obj = {
       species: this.refs.species.value,
       type: this.refs.type.value,
@@ -71835,6 +71846,12 @@ let Tile = React.createClass({
       });
     });
   },
+  onMouseOver: function () {
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
+  onClick: function () {
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+  },
   render: function () {
     let imageBackground = {
       background: "#f2f2f2",
@@ -71944,7 +71961,7 @@ let TileList = React.createClass({
         };
 
         this.state.pokemons.forEach((item, index) => {
-          pokemonsList.push(React.createElement(Tile, { key: index, id: item.id, url: item.sprites.front_default, name: item.name, badges: getBadges, types: item.types }));
+          pokemonsList.push(React.createElement(Tile, { key: index, id: item.id, url: item.sprites.front_default, name: item.name, badges: getBadges, types: item.types, playMusic: this.props.playMusic, soundCollection: this.props.soundCollection }));
         });
 
         return pokemonsList;
@@ -72007,12 +72024,12 @@ let TileList = React.createClass({
           React.createElement(
             'div',
             { className: 'col-md-6' },
-            React.createElement(RandomPokemonBtn, null)
+            React.createElement(RandomPokemonBtn, { playMusic: this.props.playMusic, soundCollection: this.props.soundCollection })
           ),
           React.createElement(
             'div',
             { className: 'col-md-6' },
-            React.createElement(PokeSort, { sort: this.sort })
+            React.createElement(PokeSort, { sort: this.sort, playMusic: this.props.playMusic, soundCollection: this.props.soundCollection })
           )
         ),
         React.createElement(
@@ -72032,7 +72049,7 @@ let initializeJukebox = function () {
   return new Promise((resolve, reject) => {
     $(document).ready(function () {
       let backgroundMusicObject = soundManager.createSound({
-        url: "assets/spring_yard_zone.mp3",
+        url: "assets/Pokemon_XY_-_Battle.mp3",
         autoLoad: true,
         autoPlay: true,
         loops: 100,
@@ -72042,7 +72059,7 @@ let initializeJukebox = function () {
       });
 
       backgroundMusicObject.stop();
-      backgroundMusicObject.setVolume(30);
+      backgroundMusicObject.setVolume(20);
 
       let hoverSoundObject = soundManager.createSound({
         url: "assets/hover.wav",
@@ -72056,7 +72073,7 @@ let initializeJukebox = function () {
       hoverSoundObject.stop();
 
       let selectSoundObject = soundManager.createSound({
-        url: "assets/correct.wav",
+        url: "assets/Accept.mp3",
         autoLoad: true,
         autoPlay: true,
         onload: function () {
@@ -72066,8 +72083,8 @@ let initializeJukebox = function () {
 
       selectSoundObject.stop();
 
-      let wrongSoundObject = soundManager.createSound({
-        url: "assets/wrong.mp3",
+      let pokeSortHoverSoundObject = soundManager.createSound({
+        url: "assets/sort_choice.mp3",
         autoLoad: true,
         autoPlay: true,
         onload: function () {
@@ -72075,10 +72092,21 @@ let initializeJukebox = function () {
         }
       });
 
-      wrongSoundObject.stop();
+      pokeSortHoverSoundObject.stop();
+
+      let pokeSortSelectSoundObject = soundManager.createSound({
+        url: "assets/sort_select.mp3",
+        autoLoad: true,
+        autoPlay: true,
+        onload: function () {
+          //alert('The sound '+this.id+' loaded!');
+        }
+      });
+
+      pokeSortSelectSoundObject.stop();
 
       let play = function (choice, soundCollection) {
-        if (choice === 'backgroundMusic') soundCollection.backgroundMusicObject.play();else if (choice === 'hoverSound') soundCollection.hoverSoundObject.play();else if (choice === 'selectSound') soundCollection.selectSoundObject.play();else soundCollection.wrongSoundObject.play();
+        if (choice === 'backgroundMusic') soundCollection.backgroundMusicObject.play();else if (choice === 'hoverSound') soundCollection.hoverSoundObject.play();else if (choice === 'selectSound') soundCollection.selectSoundObject.play();else if (choice === 'pokeSortHoverSound') soundCollection.pokeSortHoverSoundObject.play();else if (choice === 'pokeSortSelectSound') soundCollection.pokeSortSelectSoundObject.play();
       };
 
       resolve({
@@ -72086,7 +72114,8 @@ let initializeJukebox = function () {
           backgroundMusicObject,
           hoverSoundObject,
           selectSoundObject,
-          wrongSoundObject
+          pokeSortHoverSoundObject,
+          pokeSortSelectSoundObject
         },
         musicPlayer: play
       });

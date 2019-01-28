@@ -2,7 +2,7 @@ let initializeJukebox = function(){
   return new Promise((resolve, reject) => {
     $( document ).ready(function() {
       let backgroundMusicObject = soundManager.createSound({
-        url: "assets/spring_yard_zone.mp3",
+        url: "assets/Pokemon_XY_-_Battle.mp3",
         autoLoad: true,
         autoPlay: true,
         loops: 100,
@@ -12,7 +12,7 @@ let initializeJukebox = function(){
       });
 
       backgroundMusicObject.stop();
-      backgroundMusicObject.setVolume(30);
+      backgroundMusicObject.setVolume(20);
 
       let hoverSoundObject = soundManager.createSound({
         url: "assets/hover.wav",
@@ -26,7 +26,7 @@ let initializeJukebox = function(){
       hoverSoundObject.stop();
 
       let selectSoundObject = soundManager.createSound({
-        url: "assets/correct.wav",
+        url: "assets/Accept.mp3",
         autoLoad: true,
         autoPlay: true,
         onload: function() {
@@ -36,8 +36,8 @@ let initializeJukebox = function(){
 
       selectSoundObject.stop();
 
-      let wrongSoundObject = soundManager.createSound({
-        url: "assets/wrong.mp3",
+      let pokeSortHoverSoundObject = soundManager.createSound({
+        url: "assets/sort_choice.mp3",
         autoLoad: true,
         autoPlay: true,
         onload: function() {
@@ -45,7 +45,18 @@ let initializeJukebox = function(){
         },
       });
 
-      wrongSoundObject.stop();
+      pokeSortHoverSoundObject.stop();
+
+      let pokeSortSelectSoundObject = soundManager.createSound({
+        url: "assets/sort_select.mp3",
+        autoLoad: true,
+        autoPlay: true,
+        onload: function() {
+          //alert('The sound '+this.id+' loaded!');
+        },
+      });
+
+      pokeSortSelectSoundObject.stop();
 
       let play = function(choice, soundCollection){
         if(choice === 'backgroundMusic')
@@ -54,8 +65,10 @@ let initializeJukebox = function(){
           soundCollection.hoverSoundObject.play();
         else if(choice === 'selectSound')
           soundCollection.selectSoundObject.play();
-        else
-          soundCollection.wrongSoundObject.play();
+        else if(choice ==='pokeSortHoverSound')
+          soundCollection.pokeSortHoverSoundObject.play();
+        else if(choice ==='pokeSortSelectSound')
+          soundCollection.pokeSortSelectSoundObject.play();
       }
 
       resolve({
@@ -63,7 +76,8 @@ let initializeJukebox = function(){
           backgroundMusicObject,
           hoverSoundObject,
           selectSoundObject,
-          wrongSoundObject
+          pokeSortHoverSoundObject,
+          pokeSortSelectSoundObject
         },
         musicPlayer: play
       });

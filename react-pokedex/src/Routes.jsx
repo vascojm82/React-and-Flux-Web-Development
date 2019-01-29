@@ -2,6 +2,7 @@ let React = require('react');
 let ReactRouter = require('react-router');
 let Router = ReactRouter.Router;
 let Route = ReactRouter.Route;
+let IndexRoute = ReactRouter.IndexRoute;
 let hashHistory = ReactRouter.hashHistory;
 let Favicon = require('react-favicon');
 let App = require("./components/App.jsx");
@@ -14,9 +15,9 @@ let Routes = (
   <div>
     <Favicon url="./img/favicon.ico" />
     <Router history={hashHistory}>
-      <Route component={App}>
-        <Route path="/" component={HomePage} />
-        <Route path="/pokemon/:id" component={Details} />
+      <Route path="/" component={App}>
+        <IndexRoute component={HomePage} />
+        <Route path="pokemon/:id" component={Details} />
       </Route>
     </Router>
   </div>

@@ -70750,6 +70750,7 @@ let React = require('react');
 let ReactRouter = require('react-router');
 let Router = ReactRouter.Router;
 let Route = ReactRouter.Route;
+let IndexRoute = ReactRouter.IndexRoute;
 let hashHistory = ReactRouter.hashHistory;
 let Favicon = require('react-favicon');
 let App = require("./components/App.jsx");
@@ -70767,9 +70768,9 @@ let Routes = React.createElement(
     { history: hashHistory },
     React.createElement(
       Route,
-      { component: App },
-      React.createElement(Route, { path: '/', component: HomePage }),
-      React.createElement(Route, { path: '/pokemon/:id', component: Details })
+      { path: '/', component: App },
+      React.createElement(IndexRoute, { component: HomePage }),
+      React.createElement(Route, { path: 'pokemon/:id', component: Details })
     )
   )
 );
@@ -71395,7 +71396,7 @@ let Header = React.createClass({
         React.createElement(
           'p',
           null,
-          'Use the Advanced Search to explore Pokemon by type, weakness, Ability, and more!'
+          'Use the Advanced Search to explore Pokemon by type, weight, ability, and more!'
         )
       )
     );
@@ -71542,6 +71543,7 @@ let RandomPokemonBtn = React.createClass({
 
   onClick: function () {
     this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+    this.props.history.push(`/pokemon/${Math.floor(Math.random() * 800)}`);
   },
   render: function () {
     let BtnStyle = {
@@ -71851,6 +71853,9 @@ let Tile = React.createClass({
   },
   onClick: function () {
     this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+    console.log("this.props", this.props);
+    console.log("this.props.history: ", this.props.history);
+    this.props.history.push(`/pokemon/${this.props.id}`);
   },
   render: function () {
     let imageBackground = {
@@ -72061,7 +72066,7 @@ module.exports = TileList;
 let initializeJukebox = function () {
   return new Promise((resolve, reject) => {
     $(document).ready(function () {
-      soundManager.setup({ debugMode: false }); //Disable Debug message in the console
+      soundManager.setup({ debugMode: false }); //Disable Debug messages in the console
 
       let backgroundMusicObject = soundManager.createSound({
         url: "assets/Pokemon_XY_-_Battle.mp3",

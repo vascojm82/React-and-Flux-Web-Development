@@ -3,6 +3,7 @@ let React = require("react");
 let RandomPokemonBtn = React.createClass({
   onClick: function(){
     this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+    this.props.history.push(`/pokemon/${Math.floor(Math.random() * 800)}`);
   },
   render: function(){
     let BtnStyle= {

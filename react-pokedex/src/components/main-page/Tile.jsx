@@ -36,6 +36,9 @@ let Tile = React.createClass({
   },
   onClick: function(){
     this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+    console.log("this.props", this.props);
+    console.log("this.props.history: ", this.props.history);
+    this.props.history.push(`/pokemon/${this.props.id}`);
   },
   render: function(){
     let imageBackground= {
@@ -82,4 +85,4 @@ let Tile = React.createClass({
   }
 });
 
-module.exports= Tile;
+module.exports = Tile;

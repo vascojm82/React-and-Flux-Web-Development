@@ -10,18 +10,16 @@ let PokemonStore = Reflux.createStore({
       A.sort(function(){return .5- Math.random()});
       return A;
     },
-    getPokemons: function(mode, filter = null){
+    getPokemons: async function(mode, filter = null){
       let pokemonNumbers = null;
+      this.pokemons = [];
+
+      this.fireUpdate(null);
 
       if(mode === "partial")
-        pokemonNumbers = this.getRandomArray(1, 800).slice(0, 12);
+        pokemonNumbers = await this.getRandomArray(1, 800).slice(0, 20);
       else
-        pokemonNumbers = this.getRandomArray(1, 800);
-
-      if(!(this.pokemons instanceof Array)){
-        console.log("this.pokemons is NOT an array!");
-        this.pokemons = [];
-      }
+        pokemonNumbers = await this.getRandomArray(1, 800);
 
       Promise.all(pokemonNumbers.map((item, index) => {
         let query = `/pokemon/${item}/`;
@@ -35,7 +33,6 @@ let PokemonStore = Reflux.createStore({
         this.filterPokemons(filter, mode)
           .then((pokemons) => {
             this.pokemons = pokemons;
-            console.log("Update this.pokemons: ",this.pokemons);
             this.fireUpdate(this.pokemons);     //Manually 'EMIT / PUBLISH' a state change in the store variable 'this.ingredients' to all SUBSCRIBER components.
                                                 //All 'SUBSCRIBER' components will get the ingredients payload data passed in the 'trigger' function.
           });
@@ -47,17 +44,20 @@ let PokemonStore = Reflux.createStore({
 
         if(mode === "all" && typeof filter === 'object'){
           filteredArray = this.pokemons.filter((pokemon) => {
-            if(pokemon.species.name === filter.species               ||
-               pokemon.types[0].type.name === filter.type            ||
-               pokemon.moves[0].move.name === filter.move            ||
-               pokemon.height === filter.height                      ||
-               pokemon.abilities[0].ability.name === filter.ability  ||
-               pokemon.weight === filter.weight){
-                 return true;
+            if(pokemon.species.name === filter.species              ||
+              pokemon.types[0].type.name === filter.type            ||
+              pokemon.moves[0].move.name === filter.move            ||
+              pokemon.height == filter.height                       ||
+              pokemon.abilities[0].ability.name === filter.ability  ||
+              pokemon.weight == filter.weight){
+                return true;
             }else {
               return false;
             }
           });
+
+          if(filteredArray.length < 1)
+            filteredArray = "NO MATCH";
 
           resolve(filteredArray);
         }
@@ -73,12 +73,12 @@ let PokemonStore = Reflux.createStore({
 
         HTTP.get(query)
           .then((data) => {
-            console.log("pokemonDescription: ", data);
             resolve(data);
           });
       });
     },
     setPokemons: function(pokemons){      //Will set Pokemons array if filtered
+      this.pokemons = [];
       this.pokemons = pokemons;
 
       this.fireUpdate(this.pokemons);     //Manually 'EMIT / PUBLISH' a state change in the store variable 'this.ingredients' to all SUBSCRIBER components.
@@ -88,15 +88,15 @@ let PokemonStore = Reflux.createStore({
       let query = `/pokemon/${searchTerm}/`;
       HTTP.get(query)
         .then((data) => {
-          console.log("searchTerm: ", searchTerm);
-          console.log("is searchTerm a num: ", isNaN(searchTerm));
+          //console.log("searchTerm: ", searchTerm);
+          //console.log("is searchTerm a num: ", isNaN(searchTerm));
           if(!isNaN(searchTerm)){   //When id passed, then goes to details-page
             this.singlePokemon = data;
             this.getPokemonDescription(this.singlePokemon.id)
               .then((data) => {
                   this.singlePokemon.pokemonDescription = data;
-                  console.log("this.singlePokemon: ", this.singlePokemon);
-                  console.log("this.pokemons ---searchPokemon--- : ", this.pokemons);
+                  //console.log("this.singlePokemon: ", this.singlePokemon);
+                  //console.log("this.pokemons ---searchPokemon--- : ", this.pokemons);
 
                   let pokemonObj = {
                     singlePokemon: this.singlePokemon,
@@ -109,7 +109,6 @@ let PokemonStore = Reflux.createStore({
           }else{                               //When name is passed the goes to main-page
             this.pokemons = [];
             this.pokemons.push(data);
-            console.log("this.pokemons: ", this.pokemons);
 
             this.fireUpdate(this.pokemons);     //Manually 'EMIT / PUBLISH' a state change in the store variable 'this.ingredients' to all SUBSCRIBER components.
                                                 //All 'SUBSCRIBER' components will get the ingredients payload data passed in the 'trigger' function.

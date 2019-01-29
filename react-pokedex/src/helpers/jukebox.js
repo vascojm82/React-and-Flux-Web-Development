@@ -1,6 +1,8 @@
 let initializeJukebox = function(){
   return new Promise((resolve, reject) => {
     $( document ).ready(function() {
+      soundManager.setup({debugMode: false});   //Disable Debug messages in the console
+
       let backgroundMusicObject = soundManager.createSound({
         url: "assets/Pokemon_XY_-_Battle.mp3",
         autoLoad: true,

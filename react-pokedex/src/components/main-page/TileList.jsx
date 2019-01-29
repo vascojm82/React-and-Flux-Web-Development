@@ -10,7 +10,7 @@ let TileList = React.createClass({
   //'SUBSCRIBER' in the OBSERVER DESIGN PATTERN, subscribe to change events in the store
   mixins:[Reflux.listenTo(PokemonStore, 'onChange')],   //Listen for changes in the store then call 'onChange' below
   getInitialState: function() {
-    return{pokemons: [], tileList:[]};
+    return{pokemons: [], tileList:[] };
   },
   componentWillMount: function() {
     if(this.state.tileList.length < 1){
@@ -22,39 +22,51 @@ let TileList = React.createClass({
   },
   onChange: function(event, data){
     this.setState({
-      tileList: [],
-      pokemons: data
-    },() => {
-      console.log("this.state.pokemons", this.state.pokemons);
-      let createList = () => {
-        let pokemonsList = [];
+      tileList: (data != null)? <h3>Could not find a match for your search</h3>: <i style={{fontSize: 100, margin: "auto", width: "-webkit-fill-available", marginTop: 50}} className="fa fa-circle-o-notch fa-spin fa-3x fa-fw margin-bottom"></i>,
+      pokemons: (data != null)? data: []
+    }, () => {
+      let getBadges = (types) => {
+        return new Promise((resolve, reject) => {
+          let badges = [];
 
-        let getBadges = function(types){
-          return new Promise((resolve, reject) => {
-            let badges = [];
-
-            types.forEach(function(item, index){
-              badges.push(item.type.name);
-            });
-
-            resolve(badges);
+          types.forEach(function(item, index){
+            badges.push(item.type.name);
           });
-        }
 
-        this.state.pokemons.forEach( (item, index) => {
-          pokemonsList.push(<Tile key={index} id={item.id} url={item.sprites.front_default} name={item.name} badges={getBadges} types={item.types} playMusic={this.props.playMusic} soundCollection={this.props.soundCollection} />);
+          resolve(badges);
         });
-
-        return pokemonsList;
       }
 
-      this.setState({
-        tileList: createList()
-      })
+      let createList = () => {
+        return new Promise((resolve, reject) => {
+          let pokemonsList = [];
+
+          this.state.pokemons.forEach((item, index) => {
+            pokemonsList.push(<Tile key={index} id={item.id} url={item.sprites.front_default} name={item.name} badges={getBadges} types={item.types} playMusic={this.props.playMusic} soundCollection={this.props.soundCollection} />);
+          });
+
+          resolve(pokemonsList);
+        });
+      }
+
+      if(Array.isArray(this.state.pokemons)){
+        createList()
+          .then((pokemonsList) => {
+            if(pokemonsList.length > 0){
+              this.setState({
+                tileList: pokemonsList
+              });
+            }
+          });
+      }
+
     });
   },
   sort: async function(order){
     let targetArray = this.state.pokemons;
+
+    if(!Array.isArray(targetArray))
+      return;
 
     switch(order){
       case 'lowest':

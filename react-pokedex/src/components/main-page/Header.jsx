@@ -56,7 +56,7 @@ let Header = React.createClass({
           </div>
         </div>
         <div className="col-md-12">
-          <p>Use the Advanced Search to explore Pokemon by type, weakness, Ability, and more!</p>
+          <p>Use the Advanced Search to explore Pokemon by type, weight, ability, and more!</p>
         </div>
       </div>
     );

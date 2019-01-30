@@ -95,12 +95,8 @@ let PokemonStore = Reflux.createStore({
             this.getPokemonDescription(this.singlePokemon.id)
               .then((data) => {
                   this.singlePokemon.pokemonDescription = data;
-                  //console.log("this.singlePokemon: ", this.singlePokemon);
-                  //console.log("this.pokemons ---searchPokemon--- : ", this.pokemons);
-
                   let pokemonObj = {
-                    singlePokemon: this.singlePokemon,
-                    pokemonsList: this.pokemons
+                    singlePokemon: this.singlePokemon
                   }
 
                   this.fireUpdate(pokemonObj); //Manually 'EMIT / PUBLISH' a state change in the store variable 'this.ingredients' to all SUBSCRIBER components.

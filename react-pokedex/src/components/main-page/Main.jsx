@@ -16,13 +16,13 @@ let Main = React.createClass({
     $(ReactDOM.findDOMNode(this.refs.modal)).modal();
     $('#openingModal').modal('show');
   },
-  componentWillMount: function(){
+  componentDidMount: function(){
     MusicPlayer.initializeJukebox()     //Promesified the 'MusicPlayer' (Jukebox) to force synchronicity.
       .then(function(jukebox){
         this.setState({
           header: <Header playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} />,
           search: <Search playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} />,
-          tileList: <TileList playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} />,
+          tileList: <TileList history={this.props.router} playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} />,
           modal:    <Modal playMusic={jukebox.musicPlayer} soundCollection={jukebox.collection} title="Welcome to React Pokedex" subtitle1="Click on any of the Pokemons," subtitle2="to see more information about it." ref={(ref) => {this.refs.modal = ref}} />
         }, () => {
           console.log("this.state.modal ---componentWillMount--- : ", this.state.modal);
@@ -32,6 +32,8 @@ let Main = React.createClass({
       }.bind(this));
   },
   render: function(){
+    console.log("this.props ---Main--- : ", this.props);
+    console.log("this.props.router ---Main--- : ", this.props.router);
     return(
       <div className="row">
         {this.state.header}

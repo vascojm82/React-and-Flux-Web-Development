@@ -6,7 +6,7 @@ let Modal = React.createClass({
     this.props.playMusic('backgroundMusic', this.props.soundCollection);
   },
   componentDidMount: function(){
-    console.log("Modal Props: " + Json.stringify(this.props));
+    //console.log("Modal Props: " + Json.stringify(this.props));
   },
   render: function(){
     return(

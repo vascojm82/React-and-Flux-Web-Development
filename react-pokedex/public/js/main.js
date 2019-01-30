@@ -70807,7 +70807,7 @@ let Modal = React.createClass({
     this.props.playMusic('backgroundMusic', this.props.soundCollection);
   },
   componentDidMount: function () {
-    console.log("Modal Props: " + Json.stringify(this.props));
+    //console.log("Modal Props: " + Json.stringify(this.props));
   },
   render: function () {
     return React.createElement(
@@ -70997,21 +70997,14 @@ let Details = React.createClass({
     return { id: null };
   },
   componentWillMount: function () {
-    console.log(this.props);
     let pokemon_id = this.props.params.id;
 
     this.setState({
       id: pokemon_id
-    }, () => {
-      console.log(this.state.id);
     });
   },
   render: function () {
-    return React.createElement(
-      "div",
-      { className: "container-fluid" },
-      React.createElement(Main, { pokemonId: this.state.id, ref: "main" })
-    );
+    return React.createElement(Main, { pokemonId: this.state.id, history: this.props.router, ref: "main" });
   }
 });
 
@@ -71113,47 +71106,126 @@ module.exports = DetailsPanel;
 
 },{"react":479}],533:[function(require,module,exports){
 let React = require("react");
+let HTTP = require('../../services/httpService');
 
 let Header = React.createClass({
-  displayName: "Header",
+  displayName: 'Header',
 
+  getInitialState: function () {
+    return { prevPokemon: {}, nextPokemon: {} };
+  },
+  onClick: async function (id) {
+    await this.props.redirect(id);
+  },
+  populateHeader: function (id) {
+    return new Promise((resolve, reject) => {
+      let pokeId;
+
+      if (id < 1) pokeId = 1;else if (id > 799) pokeId = 799;else pokeId = id;
+
+      let query = `/pokemon/${pokeId}/`;
+      HTTP.get(query).then(data => {
+        resolve(data);
+      });
+    });
+  },
+  componentWillMount: function () {
+    this.populateHeader(parseInt(this.props.pokemonId) - 1).then(leftBtn => {
+      this.setState({
+        prevPokemon: leftBtn
+      }, () => {
+        this.populateHeader(parseInt(this.props.pokemonId) + 1).then(rightBtn => {
+          this.setState({
+            nextPokemon: rightBtn
+          });
+        });
+      });
+    });
+  },
   render: function () {
+    let prevPokemon, nextPokemon;
+
+    prevPokemon = nextPokemon = {
+      id: '',
+      species: {
+        name: ''
+      }
+    };
+
+    prevPokemon = typeof this.state.prevPokemon === 'undefined' || Object.keys(this.state.prevPokemon).length === 0 && this.state.prevPokemon.constructor === Object ? prevPokemon : this.state.prevPokemon;
+    nextPokemon = typeof this.state.nextPokemon === 'undefined' || Object.keys(this.state.nextPokemon).length === 0 && this.state.nextPokemon.constructor === Object ? nextPokemon : this.state.nextPokemon;
+
     return React.createElement(
-      "div",
-      { className: "row" },
+      'div',
+      null,
       React.createElement(
-        "div",
-        { className: "col-md-12" },
+        'div',
+        { className: 'row' },
         React.createElement(
-          "div",
-          { className: "left-arrow" },
+          'div',
+          { className: 'col-md-12' },
           React.createElement(
-            "h4",
-            null,
-            React.createElement("i", { className: "fa fa-chevron-circle-left" }),
-            " #001 Bulbasaur"
-          )
-        ),
-        React.createElement(
-          "div",
-          { className: "right-arrow" },
-          React.createElement(
-            "h4",
-            null,
-            React.createElement("i", { className: "fa fa-chevron-circle-right" }),
-            " Venasaur #003"
+            'div',
+            { className: 'row' },
+            React.createElement(
+              'div',
+              { className: 'col-md-6 btn-arrow' },
+              React.createElement(
+                'div',
+                { className: 'left-arrow', onClick: () => {
+                    this.onClick(prevPokemon.id);
+                  } },
+                React.createElement(
+                  'h4',
+                  { style: { color: "#fff", marginTop: 0 } },
+                  React.createElement('i', { className: 'fa fa-chevron-circle-left' }),
+                  ' #',
+                  prevPokemon.id,
+                  ' ',
+                  prevPokemon.species.name
+                )
+              )
+            ),
+            React.createElement(
+              'div',
+              { className: 'col-md-6 btn-arrow' },
+              React.createElement(
+                'div',
+                { className: 'right-arrow', onClick: () => {
+                    this.onClick(nextPokemon.id);
+                  } },
+                React.createElement(
+                  'h4',
+                  { style: { color: "#fff", marginTop: 0 } },
+                  '#',
+                  nextPokemon.id,
+                  ' ',
+                  nextPokemon.species.name,
+                  ' ',
+                  React.createElement('i', { className: 'fa fa-chevron-circle-right' })
+                )
+              )
+            )
           )
         )
       ),
       React.createElement(
-        "div",
-        { className: "col-md-12" },
+        'div',
+        { className: 'container' },
         React.createElement(
-          "h2",
-          { className: "text-center" },
-          this.props.selectedPokemon.species,
-          " #",
-          this.props.selectedPokemon.id
+          'div',
+          { className: 'row' },
+          React.createElement(
+            'div',
+            { className: 'col-md-12' },
+            React.createElement(
+              'h2',
+              { className: 'text-center' },
+              this.props.selectedPokemon.species,
+              ' #',
+              this.props.selectedPokemon.id
+            )
+          )
         )
       )
     );
@@ -71162,7 +71234,7 @@ let Header = React.createClass({
 
 module.exports = Header;
 
-},{"react":479}],534:[function(require,module,exports){
+},{"../../services/httpService":548,"react":479}],534:[function(require,module,exports){
 let React = require("react");
 let Reflux = require('reflux');
 let Actions = require('../../reflux/actions.jsx');
@@ -71191,7 +71263,7 @@ let Main = React.createClass({
       base_experience: data.singlePokemon.base_experience,
       ability: data.singlePokemon.stats[0].base_stat,
       pokePic: data.singlePokemon.sprites.front_default ? data.singlePokemon.sprites.front_default : null,
-      description: data.singlePokemon.pokemonDescription.flavor_text_entries[2].flavor_text ? data.singlePokemon.pokemonDescription.flavor_text_entries[2].flavor_text : '',
+      description: data.singlePokemon.pokemonDescription.flavor_text_entries[1].flavor_text ? data.singlePokemon.pokemonDescription.flavor_text_entries[1].flavor_text : '',
       height: data.singlePokemon.height ? data.singlePokemon.height : '',
       weight: data.singlePokemon.weight ? data.singlePokemon.weight : '',
       species: data.singlePokemon.species.name ? data.singlePokemon.species.name : '',
@@ -71203,6 +71275,11 @@ let Main = React.createClass({
       characteristics: pokeInfo,
       pokemons: data.pokemonsList
     });
+  },
+  redirect: async function (id) {
+    //Below, Only necessary when re-directing to same page with different params
+    await this.props.history.push(`/pokemon/${id}`); //Changes the URL path
+    await this.props.history.go(`/pokemon/${id}`); //Forces reload to that URL path
   },
   render: function () {
     let badgeList = [];
@@ -71216,7 +71293,9 @@ let Main = React.createClass({
     return React.createElement(
       'div',
       null,
-      React.createElement(Header, { pokemons: this.state.pokemons, selectedPokemon: this.state.characteristics }),
+      React.createElement(Header, { pokemonId: this.props.pokemonId, selectedPokemon: this.state.characteristics, redirect: id => {
+          this.redirect(id);
+        } }),
       React.createElement(
         'div',
         { className: 'container', style: { marginTop: 70, marginBottom: 50 } },
@@ -71243,7 +71322,18 @@ let Main = React.createClass({
               { className: 'row' },
               React.createElement(Description, { description: this.state.characteristics.description }),
               React.createElement(DetailsPanel, { characteristics: this.state.characteristics }),
-              React.createElement(StatsChart, { characteristics: this.state.characteristics })
+              React.createElement(StatsChart, { characteristics: this.state.characteristics }),
+              React.createElement(
+                'div',
+                { className: 'col-md-12', style: { paddingRight: 0 } },
+                React.createElement(
+                  'button',
+                  { className: 'btn btn-primary pull-right', style: { marginTop: 20, padding: 10 }, onClick: () => {
+                      this.props.history.push('/');
+                    } },
+                  'Back to Main'
+                )
+              )
             )
           )
         )
@@ -71427,13 +71517,13 @@ let Main = React.createClass({
     $(ReactDOM.findDOMNode(this.refs.modal)).modal();
     $('#openingModal').modal('show');
   },
-  componentWillMount: function () {
+  componentDidMount: function () {
     MusicPlayer.initializeJukebox() //Promesified the 'MusicPlayer' (Jukebox) to force synchronicity.
     .then(function (jukebox) {
       this.setState({
         header: React.createElement(Header, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
         search: React.createElement(Search, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
-        tileList: React.createElement(TileList, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
+        tileList: React.createElement(TileList, { history: this.props.router, playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
         modal: React.createElement(Modal, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection, title: 'Welcome to React Pokedex', subtitle1: 'Click on any of the Pokemons,', subtitle2: 'to see more information about it.', ref: ref => {
             this.refs.modal = ref;
           } })
@@ -71445,6 +71535,8 @@ let Main = React.createClass({
     }.bind(this));
   },
   render: function () {
+    console.log("this.props ---Main--- : ", this.props);
+    console.log("this.props.router ---Main--- : ", this.props.router);
     return React.createElement(
       'div',
       { className: 'row' },
@@ -71968,9 +72060,8 @@ let TileList = React.createClass({
       let createList = () => {
         return new Promise((resolve, reject) => {
           let pokemonsList = [];
-
           this.state.pokemons.forEach((item, index) => {
-            pokemonsList.push(React.createElement(Tile, { key: index, id: item.id, url: item.sprites.front_default, name: item.name, badges: getBadges, types: item.types, playMusic: this.props.playMusic, soundCollection: this.props.soundCollection }));
+            pokemonsList.push(React.createElement(Tile, { key: index, history: this.props.history, id: item.id, url: item.sprites.front_default, name: item.name, badges: getBadges, types: item.types, playMusic: this.props.playMusic, soundCollection: this.props.soundCollection }));
           });
 
           resolve(pokemonsList);
@@ -72042,7 +72133,7 @@ let TileList = React.createClass({
           React.createElement(
             'div',
             { className: 'col-md-6' },
-            React.createElement(RandomPokemonBtn, { playMusic: this.props.playMusic, soundCollection: this.props.soundCollection })
+            React.createElement(RandomPokemonBtn, { history: this.props.history, playMusic: this.props.playMusic, soundCollection: this.props.soundCollection })
           ),
           React.createElement(
             'div',
@@ -72250,12 +72341,8 @@ let PokemonStore = Reflux.createStore({
         this.singlePokemon = data;
         this.getPokemonDescription(this.singlePokemon.id).then(data => {
           this.singlePokemon.pokemonDescription = data;
-          //console.log("this.singlePokemon: ", this.singlePokemon);
-          //console.log("this.pokemons ---searchPokemon--- : ", this.pokemons);
-
           let pokemonObj = {
-            singlePokemon: this.singlePokemon,
-            pokemonsList: this.pokemons
+            singlePokemon: this.singlePokemon
           };
 
           this.fireUpdate(pokemonObj); //Manually 'EMIT / PUBLISH' a state change in the store variable 'this.ingredients' to all SUBSCRIBER components.

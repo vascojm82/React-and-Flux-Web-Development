@@ -6,20 +6,15 @@ let Details = React.createClass({
     return{ id: null };
   },
   componentWillMount: function(){
-    console.log(this.props);
     let pokemon_id = this.props.params.id;
 
     this.setState({
       id: pokemon_id
-    }, () => {
-      console.log(this.state.id);
     });
   },
   render: function(){
     return(
-      <div className="container-fluid">
-        <Main pokemonId={this.state.id} ref="main" />
-      </div>
+      <Main pokemonId={this.state.id} history={this.props.router} ref="main" />
     );
   }
 });

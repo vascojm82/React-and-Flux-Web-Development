@@ -24,7 +24,7 @@ let Main = React.createClass({
       base_experience: data.singlePokemon.base_experience,
       ability: data.singlePokemon.stats[0].base_stat,
       pokePic: (data.singlePokemon.sprites.front_default)? data.singlePokemon.sprites.front_default: null,
-      description: (data.singlePokemon.pokemonDescription.flavor_text_entries[2].flavor_text)? data.singlePokemon.pokemonDescription.flavor_text_entries[2].flavor_text: '',
+      description: (data.singlePokemon.pokemonDescription.flavor_text_entries[1].flavor_text)? data.singlePokemon.pokemonDescription.flavor_text_entries[1].flavor_text: '',
       height: (data.singlePokemon.height)? data.singlePokemon.height: '',
       weight: (data.singlePokemon.weight)? data.singlePokemon.weight: '',
       species: (data.singlePokemon.species.name)? data.singlePokemon.species.name: '',
@@ -37,6 +37,11 @@ let Main = React.createClass({
       pokemons: data.pokemonsList
     });
   },
+  redirect: async function(id){
+    //Below, Only necessary when re-directing to same page with different params
+    await this.props.history.push(`/pokemon/${id}`);    //Changes the URL path
+    await this.props.history.go(`/pokemon/${id}`);      //Forces reload to that URL path
+  },
   render: function() {
     let badgeList = [];
     let abilitiesBadgeList = [];
@@ -48,7 +53,7 @@ let Main = React.createClass({
 
     return(
       <div>
-        <Header pokemons={this.state.pokemons} selectedPokemon={this.state.characteristics} />
+        <Header pokemonId={this.props.pokemonId} selectedPokemon={this.state.characteristics} redirect={(id) => { this.redirect(id) }} />
         <div className="container" style={{marginTop:70, marginBottom: 50}}>
           <div className="row">
             <div className="col-md-6">
@@ -64,6 +69,9 @@ let Main = React.createClass({
                 <Description description={this.state.characteristics.description} />
                 <DetailsPanel characteristics={this.state.characteristics} />
                 <StatsChart characteristics={this.state.characteristics} />
+                <div className="col-md-12" style={{paddingRight: 0}}>
+                  <button className="btn btn-primary pull-right" style={{marginTop: 20, padding: 10}} onClick={() => {this.props.history.push('/')}}>Back to Main</button>
+                </div>
               </div>
             </div>
           </div>

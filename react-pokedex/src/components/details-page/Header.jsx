@@ -5,8 +5,11 @@ let Header = React.createClass({
   getInitialState: function(){
     return{ prevPokemon: {}, nextPokemon: {} };
   },
-  onClick: async function(id){
-    await this.props.redirect(id);
+  onClick: function(id){
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+    setTimeout(() => {
+      this.props.redirect(id);
+    }, 1200);
   },
   populateHeader: function(id){
     return new Promise((resolve, reject) => {

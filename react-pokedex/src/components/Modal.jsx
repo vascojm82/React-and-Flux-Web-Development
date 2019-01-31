@@ -1,12 +1,13 @@
 let React = require('react');
 let Json = require('circular-json');
+let Reflux = require('reflux');
+let Actions = require('../reflux/actions.jsx');
+let ModalStore = require('../reflux/modal-store.jsx');
 
 let Modal = React.createClass({
   onClose: function(){
     this.props.playMusic('backgroundMusic', this.props.soundCollection);
-  },
-  componentDidMount: function(){
-    //console.log("Modal Props: " + Json.stringify(this.props));
+    Actions.modalShown();
   },
   render: function(){
     return(

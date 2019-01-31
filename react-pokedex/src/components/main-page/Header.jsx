@@ -10,6 +10,9 @@ let Header = React.createClass({
       searchTerm: e.target.value
     });
   },
+  onMouseOver: function(){
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
   onClick: function(){
     this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
     this.setState({
@@ -50,7 +53,7 @@ let Header = React.createClass({
             <div className="col-md-4">
               <div className="form-group">
                 <h4>Name or Number</h4>
-                <input style={inputStyle} type="text" className="form-control" id="pokemon" onChange={this.onChange} value={this.state.searchTerm} /><button type="button" style={btnStyle} className="btn btn-warning" onClick={this.onClick}><i className="fa fa-search"></i></button>
+                <input style={inputStyle} type="text" className="form-control" id="pokemon" onChange={this.onChange} value={this.state.searchTerm} /><button type="button" style={btnStyle} className="btn btn-warning hvr-grow" onMouseEnter={this.onMouseOver} onClick={this.onClick}><i className="fa fa-search"></i></button>
               </div>
             </div>
           </div>

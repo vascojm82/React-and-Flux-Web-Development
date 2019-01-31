@@ -5,9 +5,12 @@ let Search = React.createClass({
   getInitialState: function() {
     return{chevron: `fa fa-chevron-circle-down`, searchDropdown: `col-md-12`, revealAdvanceSearch:'row hideAdvancedSearch', advancedSearch: {}};
   },
-  onClick: function(){
+  onMouseOver: function(){
     this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
-    
+  },
+  onClick: function(){
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+
     if(this.state.chevron === `fa fa-chevron-circle-down`){
       this.setState({
         chevron: `fa fa-chevron-circle-up`,
@@ -137,7 +140,7 @@ let Search = React.createClass({
                     <label style={labelWidth}>Weight</label>
                     <input ref="weight" type="text" className="form-control text-box" id="weight" placeholder="" />
                   </div>
-                  <button type="submit" className="btn btn-default pull-right" style={searchBtn} onClick={this.advancedSearchGo}>Search</button>
+                  <button type="submit" className="btn btn-default hvr-grow pull-right" style={searchBtn} onMouseEnter={this.onMouseOver} onClick={this.advancedSearchGo}>Search</button>
                 </div>
               </div>
             </div>

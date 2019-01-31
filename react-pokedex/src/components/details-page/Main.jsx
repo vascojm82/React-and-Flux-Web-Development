@@ -42,6 +42,9 @@ let Main = React.createClass({
     await this.props.history.push(`/pokemon/${id}`);    //Changes the URL path
     await this.props.history.go(`/pokemon/${id}`);      //Forces reload to that URL path
   },
+  onMouseOver: function(){
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
   render: function() {
     let badgeList = [];
     let abilitiesBadgeList = [];
@@ -53,12 +56,12 @@ let Main = React.createClass({
 
     return(
       <div>
-        <Header pokemonId={this.props.pokemonId} selectedPokemon={this.state.characteristics} redirect={(id) => { this.redirect(id) }} />
+        <Header pokemonId={this.props.pokemonId} selectedPokemon={this.state.characteristics} playMusic={this.props.playMusic} soundCollection={this.props.soundCollection} redirect={(id) => { this.redirect(id) }} />
         <div className="container" style={{marginTop:70, marginBottom: 50}}>
           <div className="row">
             <div className="col-md-6">
               <div className="row">
-                <PokePic url={this.state.characteristics.pokePic} />
+                <PokePic url={this.state.characteristics.pokePic} playMusic={this.props.playMusic} soundCollection={this.props.soundCollection} />
                 {badgeList.map((badgelist) => {
                   return badgelist;
                 })}
@@ -70,7 +73,7 @@ let Main = React.createClass({
                 <DetailsPanel characteristics={this.state.characteristics} />
                 <StatsChart characteristics={this.state.characteristics} />
                 <div className="col-md-12" style={{paddingRight: 0}}>
-                  <button className="btn btn-primary pull-right" style={{marginTop: 20, padding: 10}} onClick={() => {this.props.history.push('/')}}>Back to Main</button>
+                  <button className="btn btn-primary pull-right hvr-grow" style={{marginTop: 20, padding: 10}} onMouseEnter={this.onMouseOver} onClick={() => { this.props.playMusic('pokeSortSelectSound', this.props.soundCollection); this.props.history.push('/'); }}>Back to Main</button>
                 </div>
               </div>
             </div>

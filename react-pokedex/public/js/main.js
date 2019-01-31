@@ -70799,15 +70799,16 @@ module.exports = App;
 },{"react":479}],527:[function(require,module,exports){
 let React = require('react');
 let Json = require('circular-json');
+let Reflux = require('reflux');
+let Actions = require('../reflux/actions.jsx');
+let ModalStore = require('../reflux/modal-store.jsx');
 
 let Modal = React.createClass({
   displayName: 'Modal',
 
   onClose: function () {
     this.props.playMusic('backgroundMusic', this.props.soundCollection);
-  },
-  componentDidMount: function () {
-    //console.log("Modal Props: " + Json.stringify(this.props));
+    Actions.modalShown();
   },
   render: function () {
     return React.createElement(
@@ -70873,7 +70874,7 @@ let Modal = React.createClass({
 
 module.exports = Modal;
 
-},{"circular-json":21,"react":479}],528:[function(require,module,exports){
+},{"../reflux/actions.jsx":546,"../reflux/modal-store.jsx":547,"circular-json":21,"react":479,"reflux":507}],528:[function(require,module,exports){
 let React = require("react");
 
 let Badge = React.createClass({
@@ -70989,28 +70990,42 @@ module.exports = Description;
 },{"react":479}],531:[function(require,module,exports){
 let React = require("react");
 let Main = require("./Main.jsx");
+let MusicPlayer = require('../../helpers/jukebox.js');
 
 let Details = React.createClass({
   displayName: "Details",
 
   getInitialState: function () {
-    return { id: null };
+    return { id: null, main: null };
   },
   componentWillMount: function () {
     let pokemon_id = this.props.params.id;
 
     this.setState({
       id: pokemon_id
+    }, () => {
+      MusicPlayer.initializeJukebox() //Promesified the 'MusicPlayer' (Jukebox) to force synchronicity.
+      .then(jukebox => {
+        this.setState({
+          main: React.createElement(Main, { pokemonId: this.state.id, history: this.props.router, playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection, ref: ref => {
+              this.refs.main = ref;
+            } })
+        });
+      });
     });
   },
   render: function () {
-    return React.createElement(Main, { pokemonId: this.state.id, history: this.props.router, ref: "main" });
+    return React.createElement(
+      "div",
+      null,
+      this.state.main
+    );
   }
 });
 
 module.exports = Details;
 
-},{"./Main.jsx":534,"react":479}],532:[function(require,module,exports){
+},{"../../helpers/jukebox.js":544,"./Main.jsx":534,"react":479}],532:[function(require,module,exports){
 let React = require("react");
 
 let DetailsPanel = React.createClass({
@@ -71114,8 +71129,11 @@ let Header = React.createClass({
   getInitialState: function () {
     return { prevPokemon: {}, nextPokemon: {} };
   },
-  onClick: async function (id) {
-    await this.props.redirect(id);
+  onClick: function (id) {
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
+    setTimeout(() => {
+      this.props.redirect(id);
+    }, 1200);
   },
   populateHeader: function (id) {
     return new Promise((resolve, reject) => {
@@ -71234,7 +71252,7 @@ let Header = React.createClass({
 
 module.exports = Header;
 
-},{"../../services/httpService":548,"react":479}],534:[function(require,module,exports){
+},{"../../services/httpService":549,"react":479}],534:[function(require,module,exports){
 let React = require("react");
 let Reflux = require('reflux');
 let Actions = require('../../reflux/actions.jsx');
@@ -71281,6 +71299,9 @@ let Main = React.createClass({
     await this.props.history.push(`/pokemon/${id}`); //Changes the URL path
     await this.props.history.go(`/pokemon/${id}`); //Forces reload to that URL path
   },
+  onMouseOver: function () {
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
   render: function () {
     let badgeList = [];
     let abilitiesBadgeList = [];
@@ -71293,7 +71314,7 @@ let Main = React.createClass({
     return React.createElement(
       'div',
       null,
-      React.createElement(Header, { pokemonId: this.props.pokemonId, selectedPokemon: this.state.characteristics, redirect: id => {
+      React.createElement(Header, { pokemonId: this.props.pokemonId, selectedPokemon: this.state.characteristics, playMusic: this.props.playMusic, soundCollection: this.props.soundCollection, redirect: id => {
           this.redirect(id);
         } }),
       React.createElement(
@@ -71308,7 +71329,7 @@ let Main = React.createClass({
             React.createElement(
               'div',
               { className: 'row' },
-              React.createElement(PokePic, { url: this.state.characteristics.pokePic }),
+              React.createElement(PokePic, { url: this.state.characteristics.pokePic, playMusic: this.props.playMusic, soundCollection: this.props.soundCollection }),
               badgeList.map(badgelist => {
                 return badgelist;
               })
@@ -71328,8 +71349,8 @@ let Main = React.createClass({
                 { className: 'col-md-12', style: { paddingRight: 0 } },
                 React.createElement(
                   'button',
-                  { className: 'btn btn-primary pull-right', style: { marginTop: 20, padding: 10 }, onClick: () => {
-                      this.props.history.push('/');
+                  { className: 'btn btn-primary pull-right hvr-grow', style: { marginTop: 20, padding: 10 }, onMouseEnter: this.onMouseOver, onClick: () => {
+                      this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);this.props.history.push('/');
                     } },
                   'Back to Main'
                 )
@@ -71344,12 +71365,15 @@ let Main = React.createClass({
 
 module.exports = Main;
 
-},{"../../reflux/actions.jsx":546,"../../reflux/pokemon-store.jsx":547,"./BadgeList.jsx":529,"./Description.jsx":530,"./DetailsPanel.jsx":532,"./Header.jsx":533,"./PokePic.jsx":535,"./StatsChart.jsx":536,"react":479,"reflux":507}],535:[function(require,module,exports){
+},{"../../reflux/actions.jsx":546,"../../reflux/pokemon-store.jsx":548,"./BadgeList.jsx":529,"./Description.jsx":530,"./DetailsPanel.jsx":532,"./Header.jsx":533,"./PokePic.jsx":535,"./StatsChart.jsx":536,"react":479,"reflux":507}],535:[function(require,module,exports){
 let React = require("react");
 
 let PokePic = React.createClass({
   displayName: "PokePic",
 
+  onMouseOver: function () {
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
   render: function () {
     let imageBackground = {
       background: "#f2f2f2",
@@ -71359,7 +71383,7 @@ let PokePic = React.createClass({
 
     return React.createElement(
       "div",
-      { className: "col-md-12", style: imageBackground },
+      { className: "col-md-12 hvr-float-shadow", style: imageBackground, onMouseEnter: this.onMouseOver },
       React.createElement("img", { style: { width: 300, height: 300 }, className: "pokeImg image-responsive", src: this.props.url })
     );
   }
@@ -71417,6 +71441,9 @@ let Header = React.createClass({
       searchTerm: e.target.value
     });
   },
+  onMouseOver: function () {
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
   onClick: function () {
     this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
     this.setState({
@@ -71473,7 +71500,7 @@ let Header = React.createClass({
               React.createElement('input', { style: inputStyle, type: 'text', className: 'form-control', id: 'pokemon', onChange: this.onChange, value: this.state.searchTerm }),
               React.createElement(
                 'button',
-                { type: 'button', style: btnStyle, className: 'btn btn-warning', onClick: this.onClick },
+                { type: 'button', style: btnStyle, className: 'btn btn-warning hvr-grow', onMouseEnter: this.onMouseOver, onClick: this.onClick },
                 React.createElement('i', { className: 'fa fa-search' })
               )
             )
@@ -71498,6 +71525,9 @@ module.exports = Header;
 },{"../../reflux/actions.jsx":546,"react":479}],538:[function(require,module,exports){
 let React = require("react");
 let ReactDOM = require('react-dom');
+let Reflux = require('reflux');
+let Actions = require('../../reflux/actions.jsx');
+let ModalStore = require('../../reflux/modal-store.jsx');
 let Modal = require('../Modal.jsx');
 let MusicPlayer = require('../../helpers/jukebox.js');
 let Header = require("./Header.jsx");
@@ -71507,30 +71537,41 @@ let TileList = require("./TileList.jsx");
 let Main = React.createClass({
   displayName: 'Main',
 
+  //'SUBSCRIBER' in the OBSERVER DESIGN PATTERN, subscribe to change events in the store
+  mixins: [Reflux.listenTo(ModalStore, 'onChange')], //Listen for changes in the store then call 'onChange' below
   getInitialState: function () {
     //called only once when the component loads
-    return { tileList: '', modal: '', header: '', search: '' };
+    return { tileList: '', modal: '', header: '', search: '', modalShown: null };
+  },
+  onChange: function (event, count) {
+    this.setState({
+      modalShown: count
+    });
   },
   toggleModal: function () {
     console.log("$('#openingModal'): ", $('#openingModal'));
+    console.log("this.refs.modal: ", this.refs.modal);
     console.log("$(ReactDOM.findDOMNode(this.refs.modal)): ", $(ReactDOM.findDOMNode(this.refs.modal)));
     $(ReactDOM.findDOMNode(this.refs.modal)).modal();
     $('#openingModal').modal('show');
   },
   componentDidMount: function () {
+    Actions.getModalShownCount();
     MusicPlayer.initializeJukebox() //Promesified the 'MusicPlayer' (Jukebox) to force synchronicity.
     .then(function (jukebox) {
       this.setState({
         header: React.createElement(Header, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
         search: React.createElement(Search, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
         tileList: React.createElement(TileList, { history: this.props.router, playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection }),
-        modal: React.createElement(Modal, { playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection, title: 'Welcome to React Pokedex', subtitle1: 'Click on any of the Pokemons,', subtitle2: 'to see more information about it.', ref: ref => {
+        modal: React.createElement(Modal, { modalShown: this.state.modalShown, onModalOpen: count => this.onModalOpen(count), playMusic: jukebox.musicPlayer, soundCollection: jukebox.collection, title: 'Welcome to React Pokedex', subtitle1: 'Click on any of the Pokemons,', subtitle2: 'to see more information about it.', ref: ref => {
             this.refs.modal = ref;
           } })
       }, () => {
         console.log("this.state.modal ---componentWillMount--- : ", this.state.modal);
         console.log("this.refs.modal ---componentWillMount--- : ", this.refs.modal);
-        this.toggleModal();
+        if (this.state.modalShown < 1) {
+          this.toggleModal();
+        }
       });
     }.bind(this));
   },
@@ -71550,14 +71591,31 @@ let Main = React.createClass({
 
 module.exports = Main;
 
-},{"../../helpers/jukebox.js":544,"../Modal.jsx":527,"./Header.jsx":537,"./Search.jsx":541,"./TileList.jsx":543,"react":479,"react-dom":251}],539:[function(require,module,exports){
+},{"../../helpers/jukebox.js":544,"../../reflux/actions.jsx":546,"../../reflux/modal-store.jsx":547,"../Modal.jsx":527,"./Header.jsx":537,"./Search.jsx":541,"./TileList.jsx":543,"react":479,"react-dom":251,"reflux":507}],539:[function(require,module,exports){
 let React = require("react");
+let ReactDOM = require('react-dom');
 
 let PokeSort = React.createClass({
   displayName: 'PokeSort',
 
   onMouseOver: function () {
     this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
+  onMouseEnter: function () {
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+    $(ReactDOM.findDOMNode(this.refs.dropdownMenu)).show();
+  },
+  onMouseLeave: function () {
+    let t = setTimeout(() => {
+      $(ReactDOM.findDOMNode(this.refs.dropdownMenu)).hide();
+    }, 100);
+
+    $(ReactDOM.findDOMNode(this.refs.dropdownMenu)).on('mouseenter', () => {
+      $(ReactDOM.findDOMNode(this.refs.dropdownMenu)).show();
+      clearTimeout(t);
+    }).on('mouseleave', () => {
+      $(ReactDOM.findDOMNode(this.refs.dropdownMenu)).hide();
+    });
   },
   onClick: function (sortMethod = null) {
     this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
@@ -71577,13 +71635,13 @@ let PokeSort = React.createClass({
       { className: 'dropdown pull-right' },
       React.createElement(
         'button',
-        { style: dropDownStyle, onClick: () => this.onClick(), className: 'btn btn-primary dropdown-toggle', type: 'button', 'data-toggle': 'dropdown' },
+        { style: dropDownStyle, onMouseEnter: this.onMouseEnter, onMouseLeave: this.onMouseLeave, className: 'btn btn-primary dropdown-toggle', type: 'button', 'data-toggle': 'dropdown' },
         'Select order \xA0',
         React.createElement('span', { className: 'caret' })
       ),
       React.createElement(
         'ul',
-        { className: 'dropdown-menu' },
+        { className: 'dropdown-menu', ref: 'dropdownMenu' },
         React.createElement(
           'li',
           { onMouseEnter: this.onMouseOver, onClick: () => this.onClick('lowest') },
@@ -71627,15 +71685,18 @@ let PokeSort = React.createClass({
 
 module.exports = PokeSort;
 
-},{"react":479}],540:[function(require,module,exports){
+},{"react":479,"react-dom":251}],540:[function(require,module,exports){
 let React = require("react");
 
 let RandomPokemonBtn = React.createClass({
-  displayName: "RandomPokemonBtn",
+  displayName: 'RandomPokemonBtn',
 
   onClick: function () {
     this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
     this.props.history.push(`/pokemon/${Math.floor(Math.random() * 800)}`);
+  },
+  onMouseOver: function () {
+    this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
   },
   render: function () {
     let BtnStyle = {
@@ -71648,10 +71709,10 @@ let RandomPokemonBtn = React.createClass({
     };
 
     return React.createElement(
-      "button",
-      { className: "btn pull-left", style: BtnStyle, onClick: this.onClick },
-      React.createElement("i", { className: "fa fa-refresh" }),
-      "\xA0 Surprise Me!"
+      'button',
+      { className: 'btn hvr-wobble-horizontal pull-left', style: BtnStyle, onMouseEnter: this.onMouseOver, onClick: this.onClick },
+      React.createElement('i', { className: 'fa fa-refresh' }),
+      '\xA0 Surprise Me!'
     );
   }
 });
@@ -71668,8 +71729,11 @@ let Search = React.createClass({
   getInitialState: function () {
     return { chevron: `fa fa-chevron-circle-down`, searchDropdown: `col-md-12`, revealAdvanceSearch: 'row hideAdvancedSearch', advancedSearch: {} };
   },
-  onClick: function () {
+  onMouseOver: function () {
     this.props.playMusic('pokeSortHoverSound', this.props.soundCollection);
+  },
+  onClick: function () {
+    this.props.playMusic('pokeSortSelectSound', this.props.soundCollection);
 
     if (this.state.chevron === `fa fa-chevron-circle-down`) {
       this.setState({
@@ -71849,7 +71913,7 @@ let Search = React.createClass({
                 ),
                 React.createElement(
                   'button',
-                  { type: 'submit', className: 'btn btn-default pull-right', style: searchBtn, onClick: this.advancedSearchGo },
+                  { type: 'submit', className: 'btn btn-default hvr-grow pull-right', style: searchBtn, onMouseEnter: this.onMouseOver, onClick: this.advancedSearchGo },
                   'Search'
                 )
               )
@@ -72153,7 +72217,7 @@ let TileList = React.createClass({
 
 module.exports = TileList;
 
-},{"../../reflux/actions.jsx":546,"../../reflux/pokemon-store.jsx":547,"./PokeSort.jsx":539,"./RandomPokemonBtn.jsx":540,"./Tile.jsx":542,"react":479,"reflux":507}],544:[function(require,module,exports){
+},{"../../reflux/actions.jsx":546,"../../reflux/pokemon-store.jsx":548,"./PokeSort.jsx":539,"./RandomPokemonBtn.jsx":540,"./Tile.jsx":542,"react":479,"reflux":507}],544:[function(require,module,exports){
 let initializeJukebox = function () {
   return new Promise((resolve, reject) => {
     $(document).ready(function () {
@@ -72249,11 +72313,35 @@ ReactDOM.render(Routes, document.getElementById('main'));
 let Reflux = require('reflux');
 
 let Actions = Reflux.createActions(['getPokemons', //Reflux maps the string 'getPokemons' to a function with the same name in the store
-'getPokemonDescription', 'setPokemons', 'searchPokemon']);
+'getPokemonDescription', 'setPokemons', 'searchPokemon', 'modalShown', 'getModalShownCount']);
 
 module.exports = Actions;
 
 },{"reflux":507}],547:[function(require,module,exports){
+let HTTP = require('../services/httpService');
+let Reflux = require('reflux');
+let Actions = require('./actions.jsx');
+
+let ModalStore = Reflux.createStore({
+  listenables: [Actions],
+  modalShown: function () {
+    this.modalOpen++;
+    this.fireUpdate(this.modalOpen);
+  },
+  getModalShownCount: function () {
+    if (typeof this.modalOpen === 'undefined') this.modalOpen = 0;
+
+    this.fireUpdate(this.modalOpen);
+  }, //Refresh Function
+  fireUpdate: function (data) {
+    //argument data passed in
+    this.trigger('change', data); //'EMITTER / PUBLISHER' in the OBSERVER DESIGN PATTERN,
+  } //Event Type         //sends payload data 'this.pokemons' to all 'SUBSCRIBER' components
+});
+
+module.exports = ModalStore;
+
+},{"../services/httpService":549,"./actions.jsx":546,"reflux":507}],548:[function(require,module,exports){
 let HTTP = require('../services/httpService');
 let Reflux = require('reflux');
 let Actions = require('./actions.jsx');
@@ -72367,7 +72455,7 @@ let PokemonStore = Reflux.createStore({
 
 module.exports = PokemonStore;
 
-},{"../services/httpService":548,"./actions.jsx":546,"reflux":507}],548:[function(require,module,exports){
+},{"../services/httpService":549,"./actions.jsx":546,"reflux":507}],549:[function(require,module,exports){
 let Fetch = require("whatwg-fetch");
 let baseUrl = "https://pokeapi.co/api/v2";
 

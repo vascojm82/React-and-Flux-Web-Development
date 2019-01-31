@@ -1,6 +1,6 @@
 body{
   font-family: 'Lato', sans-serif;
-  background-image: url('../img/soundwave02.png');
+  background-image: url('../img/bg2.png');
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
@@ -59,7 +59,7 @@ body{
 }
 
 .btn-arrow{
-  background-color: #fff;
+  background-color: transparent;
   height: 129px;
   padding-left: 0;
   padding-right: 0;

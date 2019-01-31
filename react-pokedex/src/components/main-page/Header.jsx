@@ -56,6 +56,11 @@ let Header = React.createClass({
                 <input style={inputStyle} type="text" className="form-control" id="pokemon" onChange={this.onChange} value={this.state.searchTerm} /><button type="button" style={btnStyle} className="btn btn-warning hvr-grow" onMouseEnter={this.onMouseOver} onClick={this.onClick}><i className="fa fa-search"></i></button>
               </div>
             </div>
+            <div className="col-md-8">
+              <div className="pokedex-img pull-right" style={{paddingTop: 10, paddingRight: 175}}>
+                <img src="img/pokedex.png" alt="React Pokedex" />
+              </div>
+            </div>
           </div>
         </div>
         <div className="col-md-12">

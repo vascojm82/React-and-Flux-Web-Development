@@ -71504,6 +71504,15 @@ let Header = React.createClass({
                 React.createElement('i', { className: 'fa fa-search' })
               )
             )
+          ),
+          React.createElement(
+            'div',
+            { className: 'col-md-8' },
+            React.createElement(
+              'div',
+              { className: 'pokedex-img pull-right', style: { paddingTop: 10, paddingRight: 175 } },
+              React.createElement('img', { src: 'img/pokedex.png', alt: 'React Pokedex' })
+            )
           )
         )
       ),
